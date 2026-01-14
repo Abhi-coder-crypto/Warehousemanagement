@@ -172,8 +172,12 @@ export default function StockAllocate() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex justify-between py-2 border-b">
+                    <span className="text-muted-foreground">Total to Allocate</span>
+                    <span className="font-bold">{selectedSku?.quantity || 0}</span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b">
                     <span className="text-muted-foreground">Allocated</span>
-                    <span className="font-bold">{totalAllocated}</span>
+                    <span className="font-bold text-primary">{totalAllocated}</span>
                   </div>
                   <div className="flex justify-between py-2 border-b">
                     <span className="text-muted-foreground">Remaining</span>
