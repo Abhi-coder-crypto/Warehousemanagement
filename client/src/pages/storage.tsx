@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Progress } from "@/components/ui/progress";
@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
 import { Rack } from "@shared/schema";
 import { useLocation } from "wouter";
-import { Plus, MapPin } from "lucide-react";
+import { Plus, MapPin, Download } from "lucide-react";
 
 export default function Storage() {
   const [, setLocation] = useLocation();
@@ -15,10 +15,23 @@ export default function Storage() {
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold tracking-tight">Storage Racks</h1>
-        <Button onClick={() => setLocation("/storage/create")}>
-          <Plus className="mr-2 h-4 w-4" /> Create Rack
-        </Button>
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900">Storage Control</h1>
+          <p className="text-sm text-muted-foreground mt-1">Rack utilization and stock distribution.</p>
+        </div>
+        <div className="flex gap-3">
+          <Button variant="outline" className="gap-2" onClick={() => {
+            const csvContent = "data:text/csv;charset=utf-8," + 
+              "Rack,Location,Capacity,Load,Occupancy\n" +
+              racks?.map(r => `${r.name},${r.locationCode},${r.capacity},${r.currentLoad},${Math.round((r.currentLoad/r.capacity)*100)}%`).join("\n");
+            window.open(encodeURI(csvContent));
+          }}>
+            <Download className="w-4 h-4" /> Export Report
+          </Button>
+          <Button onClick={() => setLocation("/storage/create")}>
+            <Plus className="mr-2 h-4 w-4" /> Create Rack
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
