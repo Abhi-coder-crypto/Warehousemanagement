@@ -1,34 +1,21 @@
 import { useState } from "react";
-import { useSkus } from "@/hooks/use-inventory";
-import { useQuery } from "@tanstack/react-query";
-import { Rack } from "@shared/schema";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { Sku, Rack } from "@shared/schema";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { 
-  Search, 
-  MapPin, 
-  ChevronRight, 
-  CheckCircle2, 
-  AlertTriangle,
-  Info,
-  Warehouse,
-  Boxes,
-  TrendingUp
-} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Progress } from "@/components/ui/progress";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { Search, Boxes, MapPin, Save, Clock } from "lucide-react";
 
 export default function StockAllocate() {
-  const [step, setStep] = useState(1);
-  const { data: skus } = useSkus();
+  const { data: skus } = useQuery<Sku[]>({ queryKey: ["/api/skus"] });
   const { data: racks } = useQuery<Rack[]>({ queryKey: ["/api/racks"] });
   const [selectedSkuId, setSelectedSkuId] = useState<number | null>(null);
   const [skuSearch, setSkuSearch] = useState("");
+  const [allocations, setAllocations] = useState<Record<number, number>>({});
   const { toast } = useToast();
 
   const selectedSku = skus?.find(s => s.id === selectedSkuId);
@@ -37,262 +24,195 @@ export default function StockAllocate() {
     s.code.toLowerCase().includes(skuSearch.toLowerCase())
   );
 
-  const suggestedRacks = racks?.filter(r => r.currentLoad < r.capacity).slice(0, 3);
+  const totalAllocated = Object.values(allocations).reduce((acc, val) => acc + (val || 0), 0);
+  const remaining = (selectedSku?.quantity || 0) - totalAllocated;
 
-  const handleAllocate = () => {
-    toast({
-      title: "Allocation Successful",
-      description: `Stock for ${selectedSku?.name} has been allocated to the suggested racks.`,
-    });
-    setStep(1);
-    setSelectedSkuId(null);
-  };
+  const allocateMutation = useMutation({
+    mutationFn: async (_isPartial: boolean) => {
+      for (const [rackId, quantity] of Object.entries(allocations)) {
+        if (quantity > 0) {
+          await apiRequest("POST", "/api/racks/allocate", {
+            skuId: selectedSkuId,
+            rackId: parseInt(rackId),
+            quantity
+          });
+        }
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/racks"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/skus"] });
+      toast({ title: "Allocation Saved", description: "Stock has been successfully allocated." });
+      setAllocations({});
+      setSelectedSkuId(null);
+    }
+  });
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 pb-20">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Advanced Stock Allocation</h1>
-        <p className="text-sm text-muted-foreground mt-1">Intelligent rack assignment workflow.</p>
+    <div className="p-6 space-y-6 max-w-6xl mx-auto">
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold tracking-tight">Stock Allocation</h1>
       </div>
 
-      {/* Stepper */}
-      <div className="flex items-center gap-4 bg-white p-4 rounded-xl border border-border/50 shadow-sm">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="flex items-center gap-2">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${step >= i ? 'bg-primary text-primary-foreground' : 'bg-slate-100 text-slate-400'}`}>
-              {i}
-            </div>
-            <span className={`text-xs font-semibold ${step >= i ? 'text-slate-900' : 'text-slate-400'}`}>
-              {i === 1 ? 'SKU Selection' : i === 2 ? 'Rack Suggestion' : 'Finalize'}
-            </span>
-            {i < 3 && <ChevronRight className="w-4 h-4 text-slate-300" />}
-          </div>
-        ))}
-      </div>
-
-      {step === 1 && (
-        <Card className="border-border/50 shadow-sm overflow-hidden">
-          <CardHeader className="bg-slate-50/50 border-b border-border/50">
-            <CardTitle className="text-base">Step 1: SKU Selection</CardTitle>
-            <CardDescription className="text-xs">Identify the item and check physical characteristics.</CardDescription>
+      {!selectedSkuId ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Select SKU to Allocate</CardTitle>
           </CardHeader>
-          <CardContent className="pt-6 space-y-6">
+          <CardContent className="space-y-4">
             <div className="relative">
               <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input 
-                placeholder="Search SKU by name or code..." 
+                placeholder="Search SKU..." 
                 className="pl-9"
                 value={skuSearch}
                 onChange={(e) => setSkuSearch(e.target.value)}
               />
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[400px] overflow-y-auto pr-2">
-              {filteredSkus?.map(sku => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredSkus?.filter(s => s.quantity > 0).map(sku => (
                 <div 
                   key={sku.id}
                   onClick={() => setSelectedSkuId(sku.id)}
-                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${selectedSkuId === sku.id ? 'border-primary bg-primary/5' : 'border-slate-100 hover:border-slate-200'}`}
+                  className="p-4 rounded-lg border hover:border-primary cursor-pointer transition-colors"
                 >
                   <div className="flex justify-between items-start mb-2">
-                    <Badge variant="outline" className="text-[10px] uppercase font-bold">{sku.code}</Badge>
-                    <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${selectedSkuId === sku.id ? 'border-primary bg-primary' : 'border-slate-200'}`}>
-                      {selectedSkuId === sku.id && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
-                    </div>
+                    <Badge variant="outline">{sku.code}</Badge>
+                    <Badge variant="secondary">{sku.quantity} Units</Badge>
                   </div>
-                  <h4 className="text-sm font-bold text-slate-900">{sku.name}</h4>
-                  <div className="flex gap-4 mt-3">
-                    <div className="text-[10px]">
-                      <p className="text-muted-foreground uppercase">Weight</p>
-                      <p className="font-bold">{sku.weight || '0.5kg'}</p>
-                    </div>
-                    <div className="text-[10px]">
-                      <p className="text-muted-foreground uppercase">Dims</p>
-                      <p className="font-bold">{sku.dimensions || '10x10x5cm'}</p>
-                    </div>
-                  </div>
+                  <h4 className="font-bold">{sku.name}</h4>
+                  <p className="text-xs text-muted-foreground mt-1">{sku.category}</p>
                 </div>
               ))}
             </div>
-
-            <div className="flex justify-end pt-4 border-t border-border/50">
-              <Button disabled={!selectedSkuId} onClick={() => setStep(2)} className="gap-2">
-                Continue to Suggestions <ChevronRight className="w-4 h-4" />
-              </Button>
-            </div>
           </CardContent>
         </Card>
-      )}
-
-      {step === 2 && (
+      ) : (
         <div className="space-y-6">
-          <Card className="border-border/50 shadow-sm">
-            <CardHeader className="bg-slate-50/50 border-b border-border/50 flex flex-row items-center justify-between">
-              <div>
-                <CardTitle className="text-base">Step 2: Smart Rack Suggestions</CardTitle>
-                <CardDescription className="text-xs">Optimized based on FIFO, capacity, and pick distance.</CardDescription>
+          {/* Header */}
+          <Card className="bg-slate-50 border-none shadow-none">
+            <CardContent className="pt-6 flex flex-col md:flex-row justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-primary/10 rounded-lg text-primary">
+                  <Boxes className="w-8 h-8" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold">{selectedSku?.name}</h2>
+                  <div className="flex gap-2 mt-1">
+                    <Badge variant="outline">{selectedSku?.code}</Badge>
+                    <Badge variant="secondary">Normal Handling</Badge>
+                  </div>
+                </div>
               </div>
-              <Badge className="bg-emerald-500 gap-1.5">
-                <CheckCircle2 className="w-3 h-3" /> AI Optimized
-              </Badge>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <Table>
-                <TableHeader>
-                  <TableRow className="hover:bg-transparent">
-                    <TableHead>Rack</TableHead>
-                    <TableHead>Zone</TableHead>
-                    <TableHead>Available</TableHead>
-                    <TableHead>Distance</TableHead>
-                    <TableHead>Recommendation</TableHead>
-                    <TableHead className="text-right">Allocate</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {suggestedRacks?.map((rack, idx) => (
-                    <TableRow key={rack.id}>
-                      <TableCell className="font-bold">{rack.name}</TableCell>
-                      <TableCell><Badge variant="outline" className="text-[10px]">{rack.locationCode.split('-')[0]}</Badge></TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Progress value={(rack.currentLoad/rack.capacity)*100} className="w-16 h-1.5" />
-                          <span className="text-[10px] font-medium">{rack.capacity - rack.currentLoad} units</span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-xs font-medium text-slate-600">{12 + idx * 5}m to Packing</TableCell>
-                      <TableCell>
-                        {idx === 0 ? (
-                          <Badge className="bg-blue-500 hover:bg-blue-600 gap-1 text-[10px]">
-                            <TrendingUp className="w-3 h-3" /> Best Distance
-                          </Badge>
-                        ) : idx === 1 ? (
-                          <Badge className="bg-amber-500 hover:bg-amber-600 gap-1 text-[10px]">
-                            <Info className="w-3 h-3" /> FIFO Match
-                          </Badge>
-                        ) : (
-                          <Badge variant="secondary" className="text-[10px]">Available</Badge>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Input type="number" defaultValue={idx === 0 ? 50 : 0} className="w-20 ml-auto h-8 text-xs font-bold" />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-
-          <Card className="border-border/50 shadow-sm">
-            <CardHeader className="bg-slate-50/50 border-b border-border/50">
-              <CardTitle className="text-base">Allocation Rules</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-center space-x-2 border p-3 rounded-lg bg-slate-50/50">
-                  <Checkbox id="fifo" defaultChecked />
-                  <Label htmlFor="fifo" className="text-xs font-bold cursor-pointer">Enforce FIFO</Label>
-                </div>
-                <div className="flex items-center space-x-2 border p-3 rounded-lg bg-slate-50/50">
-                  <Checkbox id="mixed" />
-                  <Label htmlFor="mixed" className="text-xs font-bold cursor-pointer">Avoid Mixed SKUs on Rack</Label>
-                </div>
-                <div className="flex items-center space-x-2 border p-3 rounded-lg bg-slate-50/50">
-                  <Checkbox id="distance" defaultChecked />
-                  <Label htmlFor="distance" className="text-xs font-bold cursor-pointer">Prioritize Nearest to Packing</Label>
-                </div>
-                <div className="flex items-center space-x-2 border p-3 rounded-lg bg-slate-50/50">
-                  <Checkbox id="overflow" />
-                  <Label htmlFor="overflow" className="text-xs font-bold cursor-pointer">Allow Overflow Racks</Label>
-                </div>
+              <div className="text-right">
+                <p className="text-sm text-muted-foreground uppercase font-bold tracking-wider">Total to Allocate</p>
+                <p className="text-3xl font-black text-primary">{selectedSku?.quantity}</p>
               </div>
             </CardContent>
           </Card>
 
-          <div className="flex justify-between pt-4">
-            <Button variant="ghost" onClick={() => setStep(1)}>Back</Button>
-            <Button onClick={() => setStep(3)} className="gap-2">
-              Preview Summary <ChevronRight className="w-4 h-4" />
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {step === 3 && (
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="md:col-span-2 border-border/50 shadow-sm">
-              <CardHeader className="bg-slate-50/50 border-b border-border/50">
-                <CardTitle className="text-base">Allocation Summary</CardTitle>
-                <CardDescription className="text-xs">Final review before commit.</CardDescription>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Available Racks */}
+            <Card className="lg:col-span-2">
+              <CardHeader>
+                <CardTitle className="text-lg">Available Racks</CardTitle>
               </CardHeader>
-              <CardContent className="pt-6 space-y-6">
-                <div className="flex items-center gap-4 p-4 rounded-xl bg-blue-50 border border-blue-100">
-                  <div className="p-3 bg-blue-500 rounded-lg text-white">
-                    <Boxes className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-blue-900">{selectedSku?.name}</h4>
-                    <p className="text-xs text-blue-700">Allocating 150 units across 2 racks</p>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-3 border rounded-lg bg-slate-50/30">
-                    <div className="flex items-center gap-2">
-                      <Warehouse className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-xs font-bold">Rack A-12</span>
-                    </div>
-                    <span className="text-xs font-bold">100 units</span>
-                  </div>
-                  <div className="flex items-center justify-between p-3 border rounded-lg bg-slate-50/30">
-                    <div className="flex items-center gap-2">
-                      <Warehouse className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-xs font-bold">Rack B-04</span>
-                    </div>
-                    <span className="text-xs font-bold">50 units</span>
-                  </div>
-                </div>
-
-                <div className="p-3 rounded-lg bg-amber-50 border border-amber-100 flex gap-3">
-                  <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0" />
-                  <p className="text-[11px] text-amber-800 leading-tight font-medium">
-                    Warning: Rack B-04 will reach 95% occupancy after this allocation. 
-                    Consider future stock growth for this SKU.
-                  </p>
-                </div>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Rack</TableHead>
+                      <TableHead>Zone</TableHead>
+                      <TableHead>Available</TableHead>
+                      <TableHead>Current SKU</TableHead>
+                      <TableHead className="w-32 text-right">Allocate</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {racks?.map(rack => (
+                      <TableRow key={rack.id}>
+                        <TableCell className="font-bold">{rack.name}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="flex items-center w-fit gap-1">
+                            <MapPin className="w-3 h-3" /> {rack.locationCode}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{rack.capacity - rack.currentLoad} Units</TableCell>
+                        <TableCell className="text-xs text-muted-foreground italic">None</TableCell>
+                        <TableCell className="text-right">
+                          <Input 
+                            type="number" 
+                            className="w-24 ml-auto h-8 text-right font-bold"
+                            value={allocations[rack.id] || ""}
+                            onChange={(e) => {
+                              const val = parseInt(e.target.value) || 0;
+                              const maxAvailable = rack.capacity - rack.currentLoad;
+                              const currentOtherAllocations = totalAllocated - (allocations[rack.id] || 0);
+                              const maxPossible = Math.min(maxAvailable, (selectedSku?.quantity || 0) - currentOtherAllocations);
+                              
+                              setAllocations(prev => ({
+                                ...prev,
+                                [rack.id]: Math.max(0, Math.min(val, maxPossible))
+                              }));
+                            }}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </CardContent>
             </Card>
 
+            {/* Summary & Actions */}
             <div className="space-y-6">
-              <Card className="border-border/50 shadow-sm">
-                <CardHeader className="bg-slate-50/50 border-b border-border/50">
-                  <CardTitle className="text-xs uppercase tracking-wider text-muted-foreground font-bold">Process Impact</CardTitle>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Allocation Summary</CardTitle>
                 </CardHeader>
-                <CardContent className="pt-4 space-y-4">
-                  <div>
-                    <div className="flex justify-between text-[11px] mb-1">
-                      <span className="text-muted-foreground">Picking Productivity</span>
-                      <span className="text-emerald-600 font-bold">+12%</span>
-                    </div>
-                    <Progress value={85} className="h-1 bg-slate-100" />
+                <CardContent className="space-y-4">
+                  <div className="flex justify-between py-2 border-b">
+                    <span className="text-muted-foreground">Allocated</span>
+                    <span className="font-bold">{totalAllocated}</span>
                   </div>
-                  <div>
-                    <div className="flex justify-between text-[11px] mb-1">
-                      <span className="text-muted-foreground">Storage Efficiency</span>
-                      <span className="text-blue-600 font-bold">Optimized</span>
-                    </div>
-                    <Progress value={92} className="h-1 bg-slate-100" />
+                  <div className="flex justify-between py-2 border-b">
+                    <span className="text-muted-foreground">Remaining</span>
+                    <span className={`font-bold ${remaining > 0 ? "text-amber-600" : "text-emerald-600"}`}>
+                      {remaining}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg">
+                    <Clock className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-xs font-medium">FIFO: Oldest Stock First</span>
                   </div>
                 </CardContent>
               </Card>
 
-              <div className="space-y-3">
-                <Button className="w-full h-12 text-sm font-bold shadow-lg shadow-primary/20" onClick={handleAllocate}>
-                  Confirm Allocation
+              <div className="space-y-2">
+                <Button 
+                  className="w-full h-11 font-bold" 
+                  disabled={totalAllocated === 0 || allocateMutation.isPending}
+                  onClick={() => allocateMutation.mutate(false)}
+                >
+                  <Save className="mr-2 h-4 w-4" /> Save Allocation
                 </Button>
-                <Button variant="ghost" className="w-full text-xs" onClick={() => setStep(2)}>
-                  Back to Rack Selection
+                <Button 
+                  variant="outline" 
+                  className="w-full h-11"
+                  disabled={totalAllocated === 0 || remaining === 0 || allocateMutation.isPending}
+                  onClick={() => allocateMutation.mutate(true)}
+                >
+                  Allocate Remaining Later
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  className="w-full text-xs" 
+                  onClick={() => {
+                    setSelectedSkuId(null);
+                    setAllocations({});
+                  }}
+                >
+                  Cancel & Select Different SKU
                 </Button>
               </div>
             </div>
