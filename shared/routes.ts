@@ -130,6 +130,22 @@ export const api = {
         400: errorSchemas.validation,
       },
     },
+    allocations: {
+      method: 'GET' as const,
+      path: '/api/racks/allocations',
+      responses: {
+        200: z.array(z.custom<typeof stockAllocations.$inferSelect & { skuName: string, skuCode: string, rackName: string }>()),
+      },
+    },
+    allocate: {
+      method: 'POST' as const,
+      path: '/api/racks/allocate',
+      input: insertStockAllocationSchema,
+      responses: {
+        201: z.custom<typeof stockAllocations.$inferSelect>(),
+        400: errorSchemas.validation,
+      },
+    },
   },
   connectors: {
     list: {

@@ -38,6 +38,15 @@ export const racks = pgTable("racks", {
   currentLoad: integer("current_load").notNull().default(0),
 });
 
+// Stock Allocation (Mapping SKUs to Racks)
+export const stockAllocations = pgTable("stock_allocations", {
+  id: serial("id").primaryKey(),
+  skuId: integer("sku_id").notNull(),
+  rackId: integer("rack_id").notNull(),
+  quantity: integer("quantity").notNull(),
+  inboundDate: timestamp("inbound_date").defaultNow(),
+});
+
 // Orders
 export const orders = pgTable("orders", {
   id: serial("id").primaryKey(),
@@ -73,6 +82,7 @@ export const apiConnectors = pgTable("api_connectors", {
 export const insertUserSchema = createInsertSchema(users).omit({ id: true });
 export const insertSkuSchema = createInsertSchema(skus).omit({ id: true });
 export const insertRackSchema = createInsertSchema(racks).omit({ id: true, currentLoad: true });
+export const insertStockAllocationSchema = createInsertSchema(stockAllocations).omit({ id: true, inboundDate: true });
 export const insertOrderSchema = createInsertSchema(orders).omit({ id: true, createdAt: true, pickedAt: true, packedAt: true, manifestedAt: true, dispatchedAt: true });
 export const insertOrderItemSchema = createInsertSchema(orderItems).omit({ id: true });
 export const insertConnectorSchema = createInsertSchema(apiConnectors).omit({ id: true });
@@ -84,6 +94,8 @@ export type Sku = typeof skus.$inferSelect;
 export type InsertSku = z.infer<typeof insertSkuSchema>;
 export type Rack = typeof racks.$inferSelect;
 export type InsertRack = z.infer<typeof insertRackSchema>;
+export type StockAllocation = typeof stockAllocations.$inferSelect;
+export type InsertStockAllocation = z.infer<typeof insertStockAllocationSchema>;
 export type Order = typeof orders.$inferSelect;
 export type InsertOrder = z.infer<typeof insertOrderSchema>;
 export type OrderItem = typeof orderItems.$inferSelect;

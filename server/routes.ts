@@ -98,6 +98,28 @@ export async function registerRoutes(
     res.json(stats);
   });
 
+  // STOCK ALLOCATIONS
+  app.get(api.racks.allocations.path, async (req, res) => {
+    const allocations = await storage.getStockAllocations();
+    res.json(allocations);
+  });
+
+  app.post(api.racks.allocate.path, async (req, res) => {
+    try {
+      const input = api.racks.allocate.input.parse(req.body);
+      const allocation = await storage.allocateStock(input);
+      res.status(201).json(allocation);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({
+          message: err.errors[0].message,
+          field: err.errors[0].path.join('.'),
+        });
+      }
+      throw err;
+    }
+  });
+
   // Seed Data
   if ((await storage.getUsers()).length === 0) {
     await seedData();

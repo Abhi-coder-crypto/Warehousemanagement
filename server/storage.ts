@@ -23,6 +23,10 @@ export interface IStorage {
   // Racks
   getRacks(): Promise<Rack[]>;
   createRack(rack: InsertRack): Promise<Rack>;
+  
+  // Stock Allocations
+  getStockAllocations(): Promise<(StockAllocation & { skuName: string, skuCode: string, rackName: string })[]>;
+  allocateStock(allocation: InsertStockAllocation): Promise<StockAllocation>;
 
   // Connectors
   getConnectors(): Promise<ApiConnector[]>;
@@ -40,6 +44,7 @@ export class MemStorage implements IStorage {
   private orders: Map<number, Order>;
   private orderItems: Map<number, OrderItem>;
   private racks: Map<number, Rack>;
+  private stockAllocations: Map<number, StockAllocation>;
   private connectors: Map<number, ApiConnector>;
   
   private userId: number = 1;
@@ -47,6 +52,7 @@ export class MemStorage implements IStorage {
   private orderId: number = 1;
   private orderItemId: number = 1;
   private rackId: number = 1;
+  private allocationId: number = 1;
   private connectorId: number = 1;
 
   constructor() {
@@ -55,6 +61,7 @@ export class MemStorage implements IStorage {
     this.orders = new Map();
     this.orderItems = new Map();
     this.racks = new Map();
+    this.stockAllocations = new Map();
     this.connectors = new Map();
   }
 
@@ -142,6 +149,33 @@ export class MemStorage implements IStorage {
     const rack = { ...insertRack, id, currentLoad: 0 };
     this.racks.set(id, rack);
     return rack;
+  }
+
+  async getStockAllocations(): Promise<(StockAllocation & { skuName: string, skuCode: string, rackName: string })[]> {
+    return Array.from(this.stockAllocations.values()).map(alloc => {
+      const sku = this.skus.get(alloc.skuId);
+      const rack = this.racks.get(alloc.rackId);
+      return {
+        ...alloc,
+        skuName: sku?.name || "Unknown SKU",
+        skuCode: sku?.code || "N/A",
+        rackName: rack?.name || "Unknown Rack"
+      };
+    });
+  }
+
+  async allocateStock(allocation: InsertStockAllocation): Promise<StockAllocation> {
+    const id = this.allocationId++;
+    const newAllocation = { ...allocation, id, inboundDate: new Date() };
+    this.stockAllocations.set(id, newAllocation);
+    
+    // Update rack current load
+    const rack = this.racks.get(allocation.rackId);
+    if (rack) {
+      rack.currentLoad += allocation.quantity;
+    }
+    
+    return newAllocation;
   }
 
   async getConnectors(): Promise<ApiConnector[]> {
