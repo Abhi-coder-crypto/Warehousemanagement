@@ -31,7 +31,8 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-const COLORS = ["#3b82f6", "#f59e0b", "#ef4444", "#22c55e"];
+// Simplified palette: Primary Blue and secondary Slate
+const COLORS = ["#3b82f6", "#94a3b8", "#64748b", "#475569"];
 
 function KPICard({ title, value, subtext, icon: Icon, trend, colorClass, delay = 0 }: any) {
   return (
@@ -87,7 +88,7 @@ export default function Dashboard() {
     { name: "Pending", value: stats?.orders.pending || 0 },
     { name: "In Process", value: stats?.orders.inProcess || 0 },
     { name: "Breached", value: stats?.orders.breached || 0 },
-    { name: "Completed", value: 142 }, // Mock historical
+    { name: "Completed", value: 142 },
   ];
 
   const hourlyProductivity = [
@@ -100,10 +101,10 @@ export default function Dashboard() {
   ];
 
   const ageingBuckets = [
-    { range: '0-30 Days', value: 450, color: '#22c55e' },
-    { range: '31-60 Days', value: 120, color: '#f59e0b' },
-    { range: '61-90 Days', value: 45, color: '#f97316' },
-    { range: '90+ Days', value: 12, color: '#ef4444' },
+    { range: '0-30 Days', value: 450, color: '#3b82f6' },
+    { range: '31-60 Days', value: 120, color: '#60a5fa' },
+    { range: '61-90 Days', value: 45, color: '#93c5fd' },
+    { range: '90+ Days', value: 12, color: '#bfdbfe' },
   ];
 
   return (
@@ -125,7 +126,7 @@ export default function Dashboard() {
           trend="+0.4%"
           subtext="Orders vs SLA"
           icon={CheckCircle2}
-          colorClass="bg-emerald-50 text-emerald-600"
+          colorClass="bg-slate-50 text-blue-600"
           delay={0.05}
         />
         <KPICard
@@ -134,7 +135,7 @@ export default function Dashboard() {
           trend="-12s"
           subtext="Per line item"
           icon={Timer}
-          colorClass="bg-blue-50 text-blue-600"
+          colorClass="bg-slate-50 text-blue-600"
           delay={0.1}
         />
         <KPICard
@@ -143,7 +144,7 @@ export default function Dashboard() {
           trend="+5s"
           subtext="Per shipment"
           icon={Package}
-          colorClass="bg-indigo-50 text-indigo-600"
+          colorClass="bg-slate-50 text-blue-600"
           delay={0.15}
         />
         <KPICard
@@ -152,7 +153,7 @@ export default function Dashboard() {
           trend="+2"
           subtext="Critical Attention"
           icon={AlertCircle}
-          colorClass="bg-red-50 text-red-600"
+          colorClass="bg-slate-50 text-blue-600"
           delay={0.2}
         />
         <KPICard
@@ -160,7 +161,7 @@ export default function Dashboard() {
           value="84%"
           subtext="Rack occupancy"
           icon={PieIcon}
-          colorClass="bg-purple-50 text-purple-600"
+          colorClass="bg-slate-50 text-blue-600"
           delay={0.35}
         />
       </div>
@@ -280,14 +281,14 @@ export default function Dashboard() {
               {connectors?.map((connector) => (
                 <div key={connector.id} className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-slate-50/50">
                   <div className="flex items-center gap-3">
-                    <div className={`w-2 h-2 rounded-full ${connector.status === 'active' ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'}`} />
+                    <div className={`w-2 h-2 rounded-full ${connector.status === 'active' ? 'bg-blue-500' : 'bg-slate-300'}`} />
                     <div>
                       <p className="text-xs font-bold text-slate-900">{connector.name}</p>
                       <p className="text-[10px] text-muted-foreground">Sync: {connector.lastSync ? new Date(connector.lastSync).toLocaleTimeString() : 'Never'}</p>
                     </div>
                   </div>
-                  <Badge variant="outline" className={`text-[10px] h-5 ${connector.status === 'active' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-red-50 text-red-700 border-red-200'}`}>
-                    {connector.status === 'active' ? 'Operational' : 'Failed'}
+                  <Badge variant="outline" className={`text-[10px] h-5 ${connector.status === 'active' ? 'bg-slate-50 text-blue-700 border-blue-200' : 'bg-slate-50 text-slate-600 border-slate-200'}`}>
+                    {connector.status === 'active' ? 'Operational' : 'Inactive'}
                   </Badge>
                 </div>
               ))}
@@ -298,4 +299,3 @@ export default function Dashboard() {
     </div>
   );
 }
-
