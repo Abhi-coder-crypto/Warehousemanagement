@@ -90,7 +90,7 @@ export default function Storage() {
                     <TableCell>{rack.capacity}</TableCell>
                     <TableCell>{rack.currentLoad}</TableCell>
                     <TableCell>
-                      <Badge variant={occupancy > 90 ? "destructive" : occupancy > 70 ? "warning" : "success"}>
+                      <Badge variant={occupancy > 90 ? "destructive" : occupancy > 70 ? "secondary" : "default"}>
                         {occupancy > 90 ? "Critical" : occupancy > 70 ? "High" : "Optimal"}
                       </Badge>
                     </TableCell>
