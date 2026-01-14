@@ -9,6 +9,9 @@ import {
   Menu,
   Bell,
   Search,
+  Boxes,
+  History,
+  ClipboardList,
 } from "lucide-react";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -63,11 +66,14 @@ function SidebarContent() {
           <p className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Inventory</p>
           <NavItem href="/inventory" icon={Package} label="SKU List" active={location === "/inventory"} />
           <NavItem href="/storage" icon={Grid} label="Storage Racks" active={location === "/storage"} />
+          <NavItem href="/storage/allocate" icon={Boxes} label="Stock Allocation" active={location === "/storage/allocate"} />
+          <NavItem href="/storage/ageing" icon={History} label="Stock Ageing" active={location === "/storage/ageing"} />
         </div>
 
         <div className="pt-4 pb-2">
           <p className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Operations</p>
-          <NavItem href="/orders" icon={ShoppingCart} label="Orders" active={location.startsWith("/orders")} />
+          <NavItem href="/orders" icon={ShoppingCart} label="Orders" active={location === "/orders"} />
+          <NavItem href="/orders/picklist" icon={ClipboardList} label="Picklist" active={location === "/orders/picklist"} />
         </div>
 
         <div className="pt-4 pb-2">
