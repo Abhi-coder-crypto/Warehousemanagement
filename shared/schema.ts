@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb, date } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -36,6 +36,7 @@ export const racks = pgTable("racks", {
   locationCode: text("location_code").notNull(), // e.g., "Zone 1"
   capacity: integer("capacity").notNull(),
   currentLoad: integer("current_load").notNull().default(0),
+  warehouse: text("warehouse").notNull().default("Main Warehouse"),
 });
 
 // Stock Allocation (Mapping SKUs to Racks)
@@ -44,7 +45,33 @@ export const stockAllocations = pgTable("stock_allocations", {
   skuId: integer("sku_id").notNull(),
   rackId: integer("rack_id").notNull(),
   quantity: integer("quantity").notNull(),
+  reservedQty: integer("reserved_qty").notNull().default(0),
   inboundDate: timestamp("inbound_date").defaultNow(),
+  value: integer("value").notNull().default(0), // Inventory value in cents
+});
+
+// Picklists
+export const picklists = pgTable("picklists", {
+  id: serial("id").primaryKey(),
+  orderIds: integer("order_ids").array().notNull(),
+  priority: text("priority").notNull(), // High, Medium, Low
+  warehouse: text("warehouse").notNull(),
+  status: text("status").notNull().default("Not Started"), // Not Started, In Progress, Completed
+  assignedPickerId: integer("assigned_picker_id"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Picklist Items
+export const picklistItems = pgTable("picklist_items", {
+  id: serial("id").primaryKey(),
+  picklistId: integer("picklist_id").notNull(),
+  skuId: integer("sku_id").notNull(),
+  rackId: integer("rack_id").notNull(),
+  requiredQty: integer("required_qty").notNull(),
+  pickedQty: integer("picked_qty").notNull().default(0),
+  shortPickReason: text("short_pick_reason"), // Damaged, Missing, Not Found
+  status: text("status").notNull().default("Pending"), // Pending, Picked, Short
+  pickSequence: integer("pick_sequence").notNull(),
 });
 
 // Orders
@@ -86,6 +113,8 @@ export const insertStockAllocationSchema = createInsertSchema(stockAllocations).
 export const insertOrderSchema = createInsertSchema(orders).omit({ id: true, createdAt: true, pickedAt: true, packedAt: true, manifestedAt: true, dispatchedAt: true });
 export const insertOrderItemSchema = createInsertSchema(orderItems).omit({ id: true });
 export const insertConnectorSchema = createInsertSchema(apiConnectors).omit({ id: true });
+export const insertPicklistSchema = createInsertSchema(picklists).omit({ id: true, createdAt: true });
+export const insertPicklistItemSchema = createInsertSchema(picklistItems).omit({ id: true });
 
 // Types
 export type User = typeof users.$inferSelect;
@@ -101,3 +130,7 @@ export type InsertOrder = z.infer<typeof insertOrderSchema>;
 export type OrderItem = typeof orderItems.$inferSelect;
 export type InsertOrderItem = z.infer<typeof insertOrderItemSchema>;
 export type ApiConnector = typeof apiConnectors.$inferSelect;
+export type Picklist = typeof picklists.$inferSelect;
+export type InsertPicklist = z.infer<typeof insertPicklistSchema>;
+export type PicklistItem = typeof picklistItems.$inferSelect;
+export type InsertPicklistItem = z.infer<typeof insertPicklistItemSchema>;

@@ -24,6 +24,8 @@ import Analytics from "@/pages/analytics";
 import Login from "@/pages/login";
 import Layout from "@/components/layout";
 
+import PicklistDetail from "@/pages/picklist-detail";
+
 function Router() {
   return (
     <Switch>
@@ -57,6 +59,9 @@ function Router() {
       </Route>
       <Route path="/orders/picklist">
         <Layout><Picklist /></Layout>
+      </Route>
+      <Route path="/orders/picklist/:id">
+        <Layout><PicklistDetail /></Layout>
       </Route>
       <Route path="/orders/challan/:id">
         <Layout><ChallanView /></Layout>

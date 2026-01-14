@@ -98,7 +98,7 @@ export async function registerRoutes(
     res.json(stats);
   });
 
-  // STOCK ALLOCATIONS
+  // STOCK ALLOCATIONS & AGEING
   app.get(api.racks.allocations.path, async (req, res) => {
     const allocations = await storage.getStockAllocations();
     res.json(allocations);
@@ -118,6 +118,39 @@ export async function registerRoutes(
       }
       throw err;
     }
+  });
+
+  app.get("/api/stock/ageing", async (req, res) => {
+    const ageing = await storage.getStockAgeing();
+    res.json(ageing);
+  });
+
+  // PICKLISTS
+  app.get("/api/picklists", async (req, res) => {
+    const picklists = await storage.getPicklists();
+    res.json(picklists);
+  });
+
+  app.get("/api/picklists/:id", async (req, res) => {
+    const picklist = await storage.getPicklist(Number(req.params.id));
+    if (!picklist) return res.status(404).json({ message: "Picklist not found" });
+    res.json(picklist);
+  });
+
+  app.get("/api/picklists/:id/items", async (req, res) => {
+    const items = await storage.getPicklistItems(Number(req.params.id));
+    res.json(items);
+  });
+
+  app.patch("/api/picklists/:id/status", async (req, res) => {
+    const { status } = req.body;
+    const picklist = await storage.updatePicklistStatus(Number(req.params.id), status);
+    res.json(picklist);
+  });
+
+  app.patch("/api/picklist-items/:id", async (req, res) => {
+    const item = await storage.updatePicklistItem(Number(req.params.id), req.body);
+    res.json(item);
   });
 
   // Seed Data
@@ -140,16 +173,15 @@ async function seedData() {
   await storage.createSku({ code: "SKU-001", name: "Wireless Mouse", category: "Electronics", quantity: 150, dimensions: "10x5x2", weight: "0.2kg", status: "active", location: "A1-01" });
   await storage.createSku({ code: "SKU-002", name: "Mechanical Keyboard", category: "Electronics", quantity: 50, dimensions: "40x15x5", weight: "1.2kg", status: "active", location: "A1-02" });
   await storage.createSku({ code: "SKU-003", name: "Office Chair", category: "Furniture", quantity: 10, dimensions: "100x50x50", weight: "15kg", status: "active", location: "B2-01" });
-  await storage.createSku({ code: "SKU-004", name: "Monitor 27-inch", category: "Electronics", quantity: 0, dimensions: "60x40x10", weight: "5kg", status: "inactive", location: "A1-03" });
-
-  await storage.createOrder({ orderId: "ORD-001", customer: "John Doe", type: "Manual", status: "pending", totalQuantity: 2 }, [{ skuId: 1, quantity: 1 }, { skuId: 2, quantity: 1 }]);
-  await storage.createOrder({ orderId: "ORD-002", customer: "Jane Smith", type: "Integrated", status: "in-process", totalQuantity: 1 }, [{ skuId: 3, quantity: 1 }]);
-  await storage.createOrder({ orderId: "ORD-003", customer: "Acme Corp", type: "Integrated", status: "breached", totalQuantity: 5 }, [{ skuId: 1, quantity: 5 }]);
   
-  await storage.createRack({ name: "Rack A", locationCode: "Zone 1", capacity: 1000 });
-  await storage.createRack({ name: "Rack B", locationCode: "Zone 2", capacity: 500 });
+  await storage.createOrder({ orderId: "ORD-001", customer: "John Doe", type: "Manual", status: "pending", totalQuantity: 2 }, [{ skuId: 1, quantity: 1 }, { skuId: 2, quantity: 1 }]);
+  
+  const rack1 = await storage.createRack({ name: "Rack A", locationCode: "Zone 1", capacity: 1000, warehouse: "Main" });
+  await storage.allocateStock({ skuId: 1, rackId: rack1.id, quantity: 100, reservedQty: 0, value: 10000 });
+
+  await storage.createPicklist({ orderIds: [1], priority: "High", warehouse: "Main", status: "Not Started" }, [
+    { skuId: 1, rackId: rack1.id, requiredQty: 5, pickedQty: 0, status: "Pending", pickSequence: 1 }
+  ]);
 
   await storage.seedConnector({ name: "Shopify", status: "active", lastSync: new Date() });
-  await storage.seedConnector({ name: "Amazon", status: "active", lastSync: new Date() });
-  await storage.seedConnector({ name: "WooCommerce", status: "broken", lastSync: new Date() });
 }

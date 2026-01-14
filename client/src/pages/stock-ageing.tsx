@@ -1,82 +1,195 @@
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useQuery } from "@tanstack/react-query";
-import { differenceInDays, format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
-
-interface AllocationWithDetails {
-  id: number;
-  skuId: number;
-  rackId: number;
-  quantity: number;
-  inboundDate: string;
-  skuName: string;
-  skuCode: string;
-  rackName: string;
-}
-
-const MOCK_ALLOCATIONS: AllocationWithDetails[] = [
-  { id: 1, skuId: 101, rackId: 1, quantity: 50, inboundDate: "2023-11-15T10:00:00Z", skuName: "Wireless Headphones", skuCode: "WH-001", rackName: "Rack A-1" },
-  { id: 2, skuId: 102, rackId: 2, quantity: 30, inboundDate: "2024-01-05T14:30:00Z", skuName: "Gaming Mouse", skuCode: "GM-002", rackName: "Rack B-2" },
-  { id: 3, skuId: 103, rackId: 3, quantity: 100, inboundDate: "2023-10-20T09:15:00Z", skuName: "Mechanical Keyboard", skuCode: "MK-003", rackName: "Rack C-3" },
-  { id: 4, skuId: 104, rackId: 4, quantity: 20, inboundDate: "2024-01-10T16:45:00Z", skuName: "USB-C Hub", skuCode: "UH-004", rackName: "Rack D-4" },
-];
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Search, Download, Filter, TrendingDown, Package, AlertCircle, Clock } from "lucide-react";
+import { format } from "date-fns";
 
 export default function StockAgeing() {
-  const { data: serverAllocations } = useQuery<AllocationWithDetails[]>({ 
-    queryKey: ["/api/racks/allocations"] 
+  const [warehouseFilter, setWarehouseFilter] = useState("all");
+  const [riskFilter, setRiskFilter] = useState("all");
+  const [bucketFilter, setBucketFilter] = useState("all");
+
+  const { data: ageingData, isLoading } = useQuery<any[]>({
+    queryKey: ["/api/stock/ageing"],
   });
 
-  const allocations = serverAllocations && serverAllocations.length > 0 ? serverAllocations : MOCK_ALLOCATIONS;
+  const filteredData = ageingData?.filter(item => {
+    const matchesWarehouse = warehouseFilter === "all" || item.warehouse === warehouseFilter;
+    const matchesRisk = riskFilter === "all" || item.riskLevel === riskFilter;
+    const matchesBucket = bucketFilter === "all" || item.ageingBucket === bucketFilter;
+    return matchesWarehouse && matchesRisk && matchesBucket;
+  });
 
-  const calculateAge = (date: string) => {
-    return differenceInDays(new Date(), new Date(date));
+  const stats = {
+    totalQty: ageingData?.reduce((acc, item) => acc + item.availableQty, 0) || 0,
+    totalValue: ageingData?.reduce((acc, item) => acc + item.inventoryValue, 0) || 0,
+    deadStock: ageingData?.filter(item => item.age > 90).reduce((acc, item) => acc + item.availableQty, 0) || 0,
+    agedPercent: ageingData ? (ageingData.filter(item => item.age > 90).length / ageingData.length * 100).toFixed(1) : 0,
   };
 
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-3xl font-bold tracking-tight">Stock Ageing Report</h1>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Stock Ageing</h1>
+          <p className="text-muted-foreground">Inventory health and risk assessment</p>
+        </div>
+        <Button variant="outline" size="sm">
+          <Download className="mr-2 h-4 w-4" />
+          Export Report
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-2 text-muted-foreground mb-2">
+              <Package className="h-4 w-4" />
+              <span className="text-sm font-medium">Total Aged Qty</span>
+            </div>
+            <div className="text-2xl font-bold">{stats.totalQty}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-2 text-muted-foreground mb-2">
+              <TrendingDown className="h-4 w-4" />
+              <span className="text-sm font-medium">Total Aged Value</span>
+            </div>
+            <div className="text-2xl font-bold">${(stats.totalValue / 100).toLocaleString()}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-2 text-muted-foreground mb-2">
+              <AlertCircle className="h-4 w-4" />
+              <span className="text-sm font-medium">Dead Stock Qty</span>
+            </div>
+            <div className="text-2xl font-bold text-destructive">{stats.deadStock}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-2 text-muted-foreground mb-2">
+              <Clock className="h-4 w-4" />
+              <span className="text-sm font-medium">% Over 90 Days</span>
+            </div>
+            <div className="text-2xl font-bold">{stats.agedPercent}%</div>
+          </CardContent>
+        </Card>
+      </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Inventory Ageing Details</CardTitle>
+        <CardHeader className="pb-3">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex gap-2 flex-1">
+              <Select value={warehouseFilter} onValueChange={setWarehouseFilter}>
+                <SelectTrigger className="w-[180px]">
+                  <Filter className="mr-2 h-4 w-4" />
+                  <SelectValue placeholder="Warehouse" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Warehouses</SelectItem>
+                  <SelectItem value="Main">Main Warehouse</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={riskFilter} onValueChange={setRiskFilter}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Risk Level" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Risk Levels</SelectItem>
+                  <SelectItem value="High">High Risk</SelectItem>
+                  <SelectItem value="Medium">Medium Risk</SelectItem>
+                  <SelectItem value="Low">Low Risk</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={bucketFilter} onValueChange={setBucketFilter}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Ageing Bucket" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Buckets</SelectItem>
+                  <SelectItem value="0–30">0-30 Days</SelectItem>
+                  <SelectItem value="31–60">31-60 Days</SelectItem>
+                  <SelectItem value="61–90">61-90 Days</SelectItem>
+                  <SelectItem value="90+">90+ Days</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>SKU Code</TableHead>
-                <TableHead>SKU Name</TableHead>
-                <TableHead>Rack</TableHead>
+                <TableHead>SKU Details</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead>Location</TableHead>
                 <TableHead>Inbound Date</TableHead>
                 <TableHead>Age (Days)</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>Bucket</TableHead>
+                <TableHead>Qty (Avail/Res)</TableHead>
+                <TableHead>Value</TableHead>
+                <TableHead>Risk</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {allocations?.map((alloc) => {
-                const age = calculateAge(alloc.inboundDate);
-                return (
-                  <TableRow key={alloc.id}>
-                    <TableCell className="font-medium">{alloc.skuCode}</TableCell>
-                    <TableCell>{alloc.skuName}</TableCell>
-                    <TableCell>{alloc.rackName}</TableCell>
-                    <TableCell>{format(new Date(alloc.inboundDate), "MMM dd, yyyy")}</TableCell>
-                    <TableCell>{age} days</TableCell>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
+                    Loading ageing report...
+                  </TableCell>
+                </TableRow>
+              ) : filteredData?.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
+                    No records found
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredData?.map((item, idx) => (
+                  <TableRow key={idx}>
                     <TableCell>
-                      <Badge variant={age > 30 ? "destructive" : "secondary"}>
-                        {age > 30 ? "Old Stock" : "Fresh"}
+                      <div className="flex flex-col">
+                        <span className="font-medium">{item.skuCode}</span>
+                        <span className="text-xs text-muted-foreground">{item.skuName}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>{item.category}</TableCell>
+                    <TableCell>
+                      <div className="flex flex-col text-xs">
+                        <span>{item.warehouse}</span>
+                        <span className="text-muted-foreground">{item.zone} / {item.rack}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-xs">
+                      {item.inboundDate ? format(new Date(item.inboundDate), "MMM dd, yyyy") : "N/A"}
+                    </TableCell>
+                    <TableCell>{item.age}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline">{item.ageingBucket}</Badge>
+                    </TableCell>
+                    <TableCell>
+                      {item.availableQty} / <span className="text-muted-foreground">{item.reservedQty}</span>
+                    </TableCell>
+                    <TableCell>${(item.inventoryValue / 100).toLocaleString()}</TableCell>
+                    <TableCell>
+                      <Badge variant={
+                        item.riskLevel === "High" ? "destructive" :
+                        item.riskLevel === "Medium" ? "default" :
+                        "secondary"
+                      }>
+                        {item.riskLevel}
                       </Badge>
                     </TableCell>
                   </TableRow>
-                );
-              })}
-              {(!allocations || allocations.length === 0) && (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                    No allocated stock data available.
-                  </TableCell>
-                </TableRow>
+                ))
               )}
             </TableBody>
           </Table>
