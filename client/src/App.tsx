@@ -28,7 +28,7 @@ function Router() {
     <Switch>
       <Route path="/login" component={Login} />
       
-      {/* Protected Routes */}
+      {/* Protected Routes (Mocked as always accessible for now to fix preview) */}
       <Route path="/dashboard">
         <Layout><Dashboard /></Layout>
       </Route>
