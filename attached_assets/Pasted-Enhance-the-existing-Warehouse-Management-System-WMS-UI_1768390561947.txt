@@ -1,0 +1,103 @@
+Enhance the existing Warehouse Management System (WMS) UI prototype.
+Do NOT change the tech stack or project structure.
+Focus only on improving features, depth, and UX maturity.
+
+------------------------------------
+1. EXPORT FUNCTIONALITY (IMPORTANT)
+------------------------------------
+Add Export buttons (CSV & Excel) in all operationally relevant areas.
+
+Inventory Module:
+- SKU List: Export SKU master with quantities and locations
+- Inventory Storage View: Export location-wise stock
+- Stock Ageing: Export ageing report
+
+Order Module:
+- Orders List: Export filtered orders
+- Picklist: Export picklist for warehouse staff
+- Manifest / Challan: Export shipment data
+
+Storage Racks:
+- Rack Occupancy: Export utilization report
+- Stock Allocation: Export rack-wise allocation
+
+Rules:
+- Export button should be placed at the top-right of tables
+- Export must respect applied filters
+- Use realistic warehouse column names
+
+------------------------------------
+2. DASHBOARD – ADD SERIOUS ANALYTICS
+------------------------------------
+Upgrade dashboard from basic overview to decision-making analytics.
+
+Add KPI Cards:
+- Order Fulfillment Rate (%)
+- Average Pick Time
+- Average Pack Time
+- SLA Breach %
+- Low Stock SKUs
+- Dead / Slow Moving Stock Value
+- Rack Utilization %
+
+Add Charts:
+- Orders by Status (stacked bar)
+- Orders by Hour (warehouse productivity)
+- Inventory Ageing Buckets (0–30, 31–60, 61–90, 90+)
+- Top 10 SKUs by Volume
+- Rack Occupancy Heatmap
+
+Dashboard must feel operational and management-ready, not decorative.
+
+------------------------------------
+3. STOCK ALLOCATION – MAKE IT WAREHOUSE-GRADE
+------------------------------------
+The current stock allocation form is too basic.
+Redesign it to reflect real warehouse operations.
+
+Replace simple form with a detailed workflow:
+
+Section 1: SKU Selection
+- Searchable SKU selector
+- Auto-display SKU details (dimensions, weight, handling type)
+
+Section 2: Smart Rack Suggestions
+Table showing:
+- Rack
+- Zone
+- Available Capacity
+- Distance to Packing Area
+- FIFO Match
+- Recommended (badge)
+
+Section 3: Allocation Builder
+- Allow splitting quantity across multiple racks
+- Show max capacity per rack
+- Inline validation and overfill warnings
+
+Section 4: Allocation Rules
+Checkboxes:
+- Enforce FIFO
+- Avoid mixed SKUs
+- Prioritize nearest rack
+- Allow overflow racks
+
+Section 5: Allocation Summary
+- Total quantity allocated
+- Space utilization %
+- Estimated picking impact
+
+This page must look operational, data-heavy, and realistic.
+
+------------------------------------
+4. OVERALL UI MATURITY (REMOVE CHILDISH FEEL)
+------------------------------------
+Improve UX and visual seriousness across all modules:
+
+- Use neutral enterprise colors (grey, slate, blue)
+- Reduce excessive spacing; increase table density
+- Use badges instead of plain text for statuses
+- Filters must appear above all tables
+- Every page should feel task-oriented, not decorative
+
+The final UI should look suitable for a real warehouse client demo.
