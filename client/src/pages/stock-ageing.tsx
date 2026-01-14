@@ -61,7 +61,7 @@ export default function StockAgeing() {
               <TrendingDown className="h-4 w-4" />
               <span className="text-sm font-medium">Total Aged Value</span>
             </div>
-            <div className="text-2xl font-bold">${(stats.totalValue / 100).toLocaleString()}</div>
+            <div className="text-2xl font-bold">₹{(stats.totalValue / 100).toLocaleString()}</div>
           </CardContent>
         </Card>
         <Card>
@@ -178,7 +178,7 @@ export default function StockAgeing() {
                     <TableCell>
                       {item.availableQty} / <span className="text-muted-foreground">{item.reservedQty}</span>
                     </TableCell>
-                    <TableCell>${(item.inventoryValue / 100).toLocaleString()}</TableCell>
+                    <TableCell>₹{(item.inventoryValue / 100).toLocaleString()}</TableCell>
                     <TableCell>
                       <Badge variant={
                         item.riskLevel === "High" ? "destructive" :
