@@ -37,7 +37,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Eye, Printer, ClipboardList, Search } from "lucide-react";
+import { Plus, Eye, Printer, ClipboardList, Search, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Link, useLocation } from "wouter";
 
