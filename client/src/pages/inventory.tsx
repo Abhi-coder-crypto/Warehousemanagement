@@ -83,17 +83,17 @@ export default function Inventory() {
         </Button>
       </div>
 
-      <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+      <div className="bg-card rounded-lg border border-border/60 shadow-sm overflow-hidden">
         <Table>
-          <TableHeader className="bg-muted/30">
+          <TableHeader className="bg-slate-50/50">
             <TableRow>
-              <TableHead>SKU Code</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Location</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Quantity</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="py-2 text-[11px] font-bold uppercase tracking-wider">SKU Code</TableHead>
+              <TableHead className="py-2 text-[11px] font-bold uppercase tracking-wider">Name</TableHead>
+              <TableHead className="py-2 text-[11px] font-bold uppercase tracking-wider">Category</TableHead>
+              <TableHead className="py-2 text-[11px] font-bold uppercase tracking-wider">Location</TableHead>
+              <TableHead className="py-2 text-[11px] font-bold uppercase tracking-wider">Status</TableHead>
+              <TableHead className="py-2 text-[11px] font-bold uppercase tracking-wider text-right">Quantity</TableHead>
+              <TableHead className="py-2 text-[11px] font-bold uppercase tracking-wider text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -103,42 +103,47 @@ export default function Inventory() {
               <TableRow><TableCell colSpan={7} className="h-24 text-center text-muted-foreground">No items found.</TableCell></TableRow>
             ) : (
               filteredSkus?.map((sku) => (
-                <TableRow key={sku.id} className="hover:bg-muted/20 transition-colors">
-                  <TableCell className="font-mono font-medium">{sku.code}</TableCell>
-                  <TableCell className="font-medium">{sku.name}</TableCell>
-                  <TableCell>{sku.category}</TableCell>
-                  <TableCell>{sku.location || "Unassigned"}</TableCell>
-                  <TableCell>
-                    <Badge variant={sku.status === 'active' ? 'default' : 'secondary'} className={sku.status === 'active' ? 'bg-emerald-500 hover:bg-emerald-600' : ''}>
+                <TableRow key={sku.id} className="hover:bg-slate-50/50 transition-colors border-b border-border/40">
+                  <TableCell className="py-2 font-mono text-xs font-bold text-blue-700">{sku.code}</TableCell>
+                  <TableCell className="py-2 text-xs font-semibold">{sku.name}</TableCell>
+                  <TableCell className="py-2 text-xs text-slate-600">{sku.category}</TableCell>
+                  <TableCell className="py-2 text-xs">
+                    <div className="flex items-center gap-1">
+                      <Grid3X3 className="w-3 h-3 text-muted-foreground" />
+                      <span className="font-medium">{sku.location || "Unassigned"}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="py-2">
+                    <Badge variant="outline" className={`text-[10px] font-bold uppercase h-5 ${sku.status === 'active' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-100 text-slate-600'}`}>
                       {sku.status}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-right">
-                    <span className={sku.quantity < 10 ? "text-destructive font-bold" : "text-foreground"}>
+                  <TableCell className="py-2 text-right">
+                    <span className={`text-xs font-bold ${sku.quantity < 10 ? "text-red-600" : "text-slate-900"}`}>
                       {sku.quantity}
                     </span>
                   </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
+                  <TableCell className="py-2 text-right">
+                    <div className="flex justify-end gap-1">
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="text-muted-foreground hover:text-primary"
+                        className="h-7 w-7 text-muted-foreground hover:text-primary"
                         onClick={() => setLocation(`/inventory/edit/${sku.id}`)}
                       >
-                        <Edit2 className="w-4 h-4" />
+                        <Edit2 className="w-3.5 h-3.5" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="text-muted-foreground hover:text-destructive"
+                        className="h-7 w-7 text-muted-foreground hover:text-destructive"
                         onClick={() => {
                           if (confirm('Are you sure you want to delete this SKU?')) {
                             deleteSku.mutate(sku.id);
                           }
                         }}
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-3.5 h-3.5" />
                       </Button>
                     </div>
                   </TableCell>

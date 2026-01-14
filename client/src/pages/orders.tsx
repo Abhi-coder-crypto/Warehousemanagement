@@ -93,17 +93,17 @@ export default function Orders() {
         </div>
       </div>
 
-      <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+      <div className="bg-card rounded-lg border border-border/60 shadow-sm overflow-hidden">
         <Table>
-          <TableHeader className="bg-muted/30">
+          <TableHeader className="bg-slate-50/50">
             <TableRow>
-              <TableHead>Order ID</TableHead>
-              <TableHead>Customer</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Items</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="py-2 text-[11px] font-bold uppercase tracking-wider">Order ID</TableHead>
+              <TableHead className="py-2 text-[11px] font-bold uppercase tracking-wider">Customer</TableHead>
+              <TableHead className="py-2 text-[11px] font-bold uppercase tracking-wider">Type</TableHead>
+              <TableHead className="py-2 text-[11px] font-bold uppercase tracking-wider">Date</TableHead>
+              <TableHead className="py-2 text-[11px] font-bold uppercase tracking-wider">Status</TableHead>
+              <TableHead className="py-2 text-[11px] font-bold uppercase tracking-wider text-right">Items</TableHead>
+              <TableHead className="py-2 text-[11px] font-bold uppercase tracking-wider text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -113,24 +113,24 @@ export default function Orders() {
               <TableRow><TableCell colSpan={7} className="h-24 text-center text-muted-foreground">No orders found.</TableCell></TableRow>
             ) : (
               filteredOrders?.map((order) => (
-                <TableRow key={order.id} className="hover:bg-muted/20 transition-colors">
-                  <TableCell className="font-mono font-medium">{order.orderId}</TableCell>
-                  <TableCell className="font-medium">{order.customer}</TableCell>
-                  <TableCell>{order.type}</TableCell>
-                  <TableCell>{new Date(order.createdAt!).toLocaleDateString()}</TableCell>
-                  <TableCell>
+                <TableRow key={order.id} className="hover:bg-slate-50/50 transition-colors border-b border-border/40">
+                  <TableCell className="py-2 font-mono text-xs font-bold text-blue-700">{order.orderId}</TableCell>
+                  <TableCell className="py-2 text-xs font-semibold">{order.customer}</TableCell>
+                  <TableCell className="py-2 text-xs text-slate-600">{order.type}</TableCell>
+                  <TableCell className="py-2 text-xs">{new Date(order.createdAt!).toLocaleDateString()}</TableCell>
+                  <TableCell className="py-2">
                     <OrderStatusBadge status={order.status} />
                   </TableCell>
-                  <TableCell className="text-right">{order.totalQuantity}</TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
+                  <TableCell className="py-2 text-right text-xs font-bold">{order.totalQuantity}</TableCell>
+                  <TableCell className="py-2 text-right">
+                    <div className="flex justify-end gap-1">
                       <Link href={`/orders/${order.id}`}>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary">
-                          <Eye className="w-4 h-4" />
+                        <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-primary">
+                          <Eye className="w-3.5 h-3.5" />
                         </Button>
                       </Link>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground" onClick={() => setLocation(`/orders/challan/${order.id}`)}>
-                        <Printer className="w-4 h-4" />
+                      <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => setLocation(`/orders/challan/${order.id}`)}>
+                        <Printer className="w-3.5 h-3.5" />
                       </Button>
                     </div>
                   </TableCell>
@@ -146,14 +146,14 @@ export default function Orders() {
 
 function OrderStatusBadge({ status }: { status: string }) {
   const styles = {
-    pending: "bg-amber-100 text-amber-800 border-amber-200",
-    "in-process": "bg-blue-100 text-blue-800 border-blue-200",
-    breached: "bg-red-100 text-red-800 border-red-200",
-    completed: "bg-emerald-100 text-emerald-800 border-emerald-200",
-    dispatched: "bg-slate-100 text-slate-800 border-slate-200",
+    pending: "bg-amber-50 text-amber-700 border-amber-200",
+    "in-process": "bg-blue-50 text-blue-700 border-blue-200",
+    breached: "bg-red-50 text-red-700 border-red-200",
+    completed: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    dispatched: "bg-slate-50 text-slate-700 border-slate-200",
   };
   return (
-    <Badge variant="outline" className={`${(styles as any)[status] || ""} capitalize font-normal px-2.5 py-0.5 rounded-full`}>
+    <Badge variant="outline" className={`${(styles as any)[status] || ""} capitalize text-[10px] font-bold h-5 px-2 rounded-full border`}>
       {status.replace("-", " ")}
     </Badge>
   );
