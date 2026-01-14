@@ -25,6 +25,8 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
+import logoImg from "@assets/ATLOGOPNGNOBG_1768390868520.png";
+
 interface NavItemProps {
   href: string;
   icon: React.ElementType;
@@ -53,8 +55,8 @@ function SidebarContent() {
   return (
     <div className="flex flex-col h-full bg-card border-r border-border">
       <div className="p-6 border-b border-border/50">
-        <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold">W</div>
+        <Link href="/dashboard" className="flex items-center gap-3">
+          <img src={logoImg} alt="WMS Pro Logo" className="w-10 h-10 object-contain" />
           <span className="font-display font-bold text-xl tracking-tight">WMS Pro</span>
         </Link>
       </div>
@@ -144,7 +146,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                       <p className="text-xs text-muted-foreground mt-1">Warehouse Manager</p>
                     </div>
                     <Avatar className="h-9 w-9 border border-border">
-                      <AvatarImage src="https://github.com/shadcn.png" />
                       <AvatarFallback>AD</AvatarFallback>
                     </Avatar>
                   </div>
