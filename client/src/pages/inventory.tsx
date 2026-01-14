@@ -28,14 +28,16 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Plus, Trash2, Search, Filter } from "lucide-react";
+import { Plus, Trash2, Search, Filter, Edit2, Grid3X3 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useLocation } from "wouter";
 
 export default function Inventory() {
   const { data: skus, isLoading } = useSkus();
   const deleteSku = useDeleteSku();
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
+  const [, setLocation] = useLocation();
 
   const filteredSkus = skus?.filter((sku) =>
     sku.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -49,7 +51,12 @@ export default function Inventory() {
           <h1 className="text-3xl font-bold tracking-tight">Inventory</h1>
           <p className="text-muted-foreground mt-2">Manage products, stock levels, and locations.</p>
         </div>
-        <CreateSkuDialog open={open} onOpenChange={setOpen} />
+        <div className="flex gap-3">
+          <Button variant="outline" onClick={() => setLocation("/inventory/storage")}>
+            <Grid3X3 className="w-4 h-4 mr-2" /> Storage View
+          </Button>
+          <CreateSkuDialog open={open} onOpenChange={setOpen} />
+        </div>
       </div>
 
       <div className="flex items-center gap-4 bg-card p-4 rounded-xl border border-border shadow-sm">
@@ -104,18 +111,28 @@ export default function Inventory() {
                     </span>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="text-muted-foreground hover:text-destructive"
-                      onClick={() => {
-                        if (confirm('Are you sure you want to delete this SKU?')) {
-                          deleteSku.mutate(sku.id);
-                        }
-                      }}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-muted-foreground hover:text-primary"
+                        onClick={() => setLocation(`/inventory/edit/${sku.id}`)}
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-muted-foreground hover:text-destructive"
+                        onClick={() => {
+                          if (confirm('Are you sure you want to delete this SKU?')) {
+                            deleteSku.mutate(sku.id);
+                          }
+                        }}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))
