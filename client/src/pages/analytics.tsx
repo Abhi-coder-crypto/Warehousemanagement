@@ -18,12 +18,13 @@ import {
   Users, 
   Package, 
   ArrowUpRight,
-  Activity
+  Activity,
+  AlertTriangle
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
-// Monochromatic Blue palette
-const COLORS = ["#3b82f6", "#60a5fa", "#93c5fd", "#bfdbfe", "#dbeafe"];
+// Semantic color palette
+const COLORS = ["#3b82f6", "#f59e0b", "#ef4444", "#10b981", "#8b5cf6"];
 
 const productivityData = [
   { day: 'Mon', fulfillment: 94, efficiency: 88 },
@@ -52,7 +53,7 @@ export default function Analytics() {
           <p className="text-sm text-muted-foreground mt-1">Deep dive into warehouse operational efficiency.</p>
         </div>
         <div className="flex gap-2">
-          <Badge variant="outline" className="bg-slate-50 text-blue-700 border-blue-200">
+          <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">
             System Live
           </Badge>
         </div>
@@ -64,11 +65,11 @@ export default function Analytics() {
             <div>
               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Storage ROI</p>
               <h3 className="text-xl font-bold">12.4%</h3>
-              <p className="text-[10px] text-blue-600 flex items-center gap-0.5 font-bold">
+              <p className="text-[10px] text-emerald-600 flex items-center gap-0.5 font-bold">
                 <ArrowUpRight className="w-3 h-3" /> +2.1%
               </p>
             </div>
-            <div className="p-2 bg-slate-50 rounded-lg text-blue-600">
+            <div className="p-2 bg-emerald-50 rounded-lg text-emerald-600">
               <TrendingUp className="w-5 h-5" />
             </div>
           </CardContent>
@@ -82,7 +83,7 @@ export default function Analytics() {
                 <ArrowUpRight className="w-3 h-3" /> +0.8%
               </p>
             </div>
-            <div className="p-2 bg-slate-50 rounded-lg text-blue-600">
+            <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
               <Users className="w-5 h-5" />
             </div>
           </CardContent>
@@ -92,11 +93,11 @@ export default function Analytics() {
             <div>
               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Stock Turnover</p>
               <h3 className="text-xl font-bold">4.8x</h3>
-              <p className="text-[10px] text-slate-600 flex items-center gap-0.5 font-bold">
+              <p className="text-[10px] text-amber-600 flex items-center gap-0.5 font-bold">
                 <Activity className="w-3 h-3" /> Stable
               </p>
             </div>
-            <div className="p-2 bg-slate-50 rounded-lg text-blue-600">
+            <div className="p-2 bg-amber-50 rounded-lg text-amber-600">
               <Package className="w-5 h-5" />
             </div>
           </CardContent>
@@ -106,11 +107,11 @@ export default function Analytics() {
             <div>
               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Order Density</p>
               <h3 className="text-xl font-bold">8.2/hr</h3>
-              <p className="text-[10px] text-blue-600 flex items-center gap-0.5 font-bold">
+              <p className="text-[10px] text-purple-600 flex items-center gap-0.5 font-bold">
                 <ArrowUpRight className="w-3 h-3" /> +1.4
               </p>
             </div>
-            <div className="p-2 bg-slate-50 rounded-lg text-blue-600">
+            <div className="p-2 bg-purple-50 rounded-lg text-purple-600">
               <Activity className="w-5 h-5" />
             </div>
           </CardContent>
@@ -132,8 +133,8 @@ export default function Analytics() {
                     <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
                   </linearGradient>
                   <linearGradient id="colorEff" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#94a3b8" stopOpacity={0.1}/>
-                    <stop offset="95%" stopColor="#94a3b8" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.1}/>
+                    <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -141,7 +142,7 @@ export default function Analytics() {
                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11 }} />
                 <Tooltip />
                 <Area type="monotone" dataKey="fulfillment" stroke="#3b82f6" fillOpacity={1} fill="url(#colorFul)" strokeWidth={2} />
-                <Area type="monotone" dataKey="efficiency" stroke="#94a3b8" fillOpacity={1} fill="url(#colorEff)" strokeWidth={2} />
+                <Area type="monotone" dataKey="efficiency" stroke="#8b5cf6" fillOpacity={1} fill="url(#colorEff)" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
           </CardContent>
@@ -189,7 +190,7 @@ export default function Analytics() {
                   key={i} 
                   className="aspect-square rounded flex items-center justify-center text-[10px] font-bold transition-all hover:scale-105 cursor-help"
                   style={{ 
-                    backgroundColor: '#3b82f6',
+                    backgroundColor: value > 80 ? '#ef4444' : value > 50 ? '#f59e0b' : '#10b981',
                     opacity: 0.1 + (value / 100) * 0.9,
                     color: value > 50 ? 'white' : 'black'
                   }}
@@ -202,13 +203,13 @@ export default function Analytics() {
           </div>
           <div className="mt-4 flex gap-4">
             <div className="flex items-center gap-1.5 text-[10px] font-medium">
-              <div className="w-2.5 h-2.5 rounded bg-[#3b82f6] opacity-20" /> Low (0-50%)
+              <div className="w-2.5 h-2.5 rounded bg-[#10b981]" /> Low (0-50%)
             </div>
             <div className="flex items-center gap-1.5 text-[10px] font-medium">
-              <div className="w-2.5 h-2.5 rounded bg-[#3b82f6] opacity-60" /> Medium (50-80%)
+              <div className="w-2.5 h-2.5 rounded bg-[#f59e0b]" /> Medium (50-80%)
             </div>
             <div className="flex items-center gap-1.5 text-[10px] font-medium">
-              <div className="w-2.5 h-2.5 rounded bg-[#3b82f6]" /> High (80%+)
+              <div className="w-2.5 h-2.5 rounded bg-[#ef4444]" /> Critical (80%+)
             </div>
           </div>
         </CardContent>

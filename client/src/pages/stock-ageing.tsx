@@ -50,7 +50,7 @@ export default function StockAgeing() {
               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Total Aged Qty</p>
               <h3 className="text-2xl font-bold tracking-tight">{stats.totalQty}</h3>
             </div>
-            <div className="p-2.5 bg-slate-50 rounded-lg text-blue-600">
+            <div className="p-2.5 bg-blue-50 rounded-lg text-blue-600">
               <Package className="w-5 h-5" />
             </div>
           </CardContent>
@@ -61,7 +61,7 @@ export default function StockAgeing() {
               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Total Aged Value</p>
               <h3 className="text-2xl font-bold tracking-tight">₹{(stats.totalValue / 100).toLocaleString()}</h3>
             </div>
-            <div className="p-2.5 bg-slate-50 rounded-lg text-blue-600">
+            <div className="p-2.5 bg-blue-50 rounded-lg text-blue-600">
               <TrendingDown className="w-5 h-5" />
             </div>
           </CardContent>
@@ -70,9 +70,9 @@ export default function StockAgeing() {
           <CardContent className="p-5 flex items-center justify-between">
             <div>
               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Dead Stock Qty</p>
-              <h3 className="text-2xl font-bold tracking-tight">{stats.deadStock}</h3>
+              <h3 className="text-2xl font-bold tracking-tight text-red-600">{stats.deadStock}</h3>
             </div>
-            <div className="p-2.5 bg-slate-50 rounded-lg text-blue-600">
+            <div className="p-2.5 bg-red-50 rounded-lg text-red-600">
               <AlertCircle className="w-5 h-5" />
             </div>
           </CardContent>
@@ -83,7 +83,7 @@ export default function StockAgeing() {
               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">% Over 90 Days</p>
               <h3 className="text-2xl font-bold tracking-tight">{stats.agedPercent}%</h3>
             </div>
-            <div className="p-2.5 bg-slate-50 rounded-lg text-blue-600">
+            <div className="p-2.5 bg-amber-50 rounded-lg text-amber-600">
               <Clock className="w-5 h-5" />
             </div>
           </CardContent>
@@ -179,7 +179,11 @@ export default function StockAgeing() {
                     </TableCell>
                     <TableCell className="text-sm font-medium text-slate-700">{item.age}</TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="text-[10px] h-5 px-1.5 font-medium border-slate-200">
+                      <Badge variant="outline" className={`text-[10px] h-5 px-1.5 font-medium ${
+                        item.age > 90 ? "bg-red-50 text-red-700 border-red-200" :
+                        item.age > 60 ? "bg-amber-50 text-amber-700 border-amber-200" :
+                        "bg-emerald-50 text-emerald-700 border-emerald-200"
+                      }`}>
                         {item.ageingBucket} Days
                       </Badge>
                     </TableCell>
@@ -193,11 +197,11 @@ export default function StockAgeing() {
                     </TableCell>
                     <TableCell>
                       <Badge 
-                        variant="outline"
+                        variant="default"
                         className={`text-[10px] h-5 px-1.5 font-bold ${
-                          item.riskLevel === "High" ? "bg-slate-50 text-slate-900 border-slate-300 shadow-sm" :
-                          item.riskLevel === "Medium" ? "bg-slate-50 text-slate-700 border-slate-200" :
-                          "bg-transparent text-slate-500 border-slate-100"
+                          item.riskLevel === "High" ? "bg-red-500 hover:bg-red-600" :
+                          item.riskLevel === "Medium" ? "bg-amber-500 hover:bg-amber-600" :
+                          "bg-emerald-500 hover:bg-emerald-600"
                         }`}
                       >
                         {item.riskLevel}

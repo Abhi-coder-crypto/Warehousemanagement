@@ -31,8 +31,8 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-// Simplified palette: Primary Blue and secondary Slate
-const COLORS = ["#3b82f6", "#94a3b8", "#64748b", "#475569"];
+// Functional colors: Blue for Pending, Amber for In Process, Red for Breached, Emerald for Completed
+const COLORS = ["#3b82f6", "#f59e0b", "#ef4444", "#10b981"];
 
 function KPICard({ title, value, subtext, icon: Icon, trend, colorClass, delay = 0 }: any) {
   return (
@@ -101,10 +101,10 @@ export default function Dashboard() {
   ];
 
   const ageingBuckets = [
-    { range: '0-30 Days', value: 450, color: '#3b82f6' },
-    { range: '31-60 Days', value: 120, color: '#60a5fa' },
-    { range: '61-90 Days', value: 45, color: '#93c5fd' },
-    { range: '90+ Days', value: 12, color: '#bfdbfe' },
+    { range: '0-30 Days', value: 450, color: '#10b981' }, // Good
+    { range: '31-60 Days', value: 120, color: '#3b82f6' }, // Normal
+    { range: '61-90 Days', value: 45, color: '#f59e0b' },  // Warning
+    { range: '90+ Days', value: 12, color: '#ef4444' },   // Critical
   ];
 
   return (
@@ -126,7 +126,7 @@ export default function Dashboard() {
           trend="+0.4%"
           subtext="Orders vs SLA"
           icon={CheckCircle2}
-          colorClass="bg-slate-50 text-blue-600"
+          colorClass="bg-emerald-50 text-emerald-600"
           delay={0.05}
         />
         <KPICard
@@ -135,7 +135,7 @@ export default function Dashboard() {
           trend="-12s"
           subtext="Per line item"
           icon={Timer}
-          colorClass="bg-slate-50 text-blue-600"
+          colorClass="bg-blue-50 text-blue-600"
           delay={0.1}
         />
         <KPICard
@@ -144,7 +144,7 @@ export default function Dashboard() {
           trend="+5s"
           subtext="Per shipment"
           icon={Package}
-          colorClass="bg-slate-50 text-blue-600"
+          colorClass="bg-indigo-50 text-indigo-600"
           delay={0.15}
         />
         <KPICard
@@ -153,7 +153,7 @@ export default function Dashboard() {
           trend="+2"
           subtext="Critical Attention"
           icon={AlertCircle}
-          colorClass="bg-slate-50 text-blue-600"
+          colorClass="bg-red-50 text-red-600"
           delay={0.2}
         />
         <KPICard
@@ -161,7 +161,7 @@ export default function Dashboard() {
           value="84%"
           subtext="Rack occupancy"
           icon={PieIcon}
-          colorClass="bg-slate-50 text-blue-600"
+          colorClass="bg-amber-50 text-amber-600"
           delay={0.35}
         />
       </div>
@@ -281,14 +281,14 @@ export default function Dashboard() {
               {connectors?.map((connector) => (
                 <div key={connector.id} className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-slate-50/50">
                   <div className="flex items-center gap-3">
-                    <div className={`w-2 h-2 rounded-full ${connector.status === 'active' ? 'bg-blue-500' : 'bg-slate-300'}`} />
+                    <div className={`w-2 h-2 rounded-full ${connector.status === 'active' ? 'bg-emerald-500' : 'bg-red-500'}`} />
                     <div>
                       <p className="text-xs font-bold text-slate-900">{connector.name}</p>
                       <p className="text-[10px] text-muted-foreground">Sync: {connector.lastSync ? new Date(connector.lastSync).toLocaleTimeString() : 'Never'}</p>
                     </div>
                   </div>
-                  <Badge variant="outline" className={`text-[10px] h-5 ${connector.status === 'active' ? 'bg-slate-50 text-blue-700 border-blue-200' : 'bg-slate-50 text-slate-600 border-slate-200'}`}>
-                    {connector.status === 'active' ? 'Operational' : 'Inactive'}
+                  <Badge variant="outline" className={`text-[10px] h-5 ${connector.status === 'active' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-red-50 text-red-700 border-red-200'}`}>
+                    {connector.status === 'active' ? 'Operational' : 'Failed'}
                   </Badge>
                 </div>
               ))}
