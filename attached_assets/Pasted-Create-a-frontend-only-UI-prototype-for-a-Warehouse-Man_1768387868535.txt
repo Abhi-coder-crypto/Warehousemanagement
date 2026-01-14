@@ -1,0 +1,101 @@
+Create a frontend-only UI prototype for a Warehouse Management System (WMS) web application.
+
+Tech stack:
+- React + TypeScript
+- Tailwind CSS
+- No backend, use mock/static data
+- Responsive admin dashboard layout
+
+User Role:
+- Warehouse Client / Admin
+
+Application Structure:
+
+1. Login Page
+- Simple email & password login UI
+- No authentication logic (mock only)
+
+2. Main Dashboard Page
+- Top header with company name and user profile
+- Left sidebar navigation
+
+Dashboard widgets:
+- Orders Summary Card:
+  - Pending Orders count
+  - In-Process Orders count
+  - Breached Orders count
+- Inventory Summary Card:
+  - Total SKUs
+  - Total Quantity
+- API Connectors Status:
+  - List of connectors with status (Active / Broken)
+- Charts:
+  - Orders by Status (Pie Chart)
+  - Inventory by SKU (Bar Chart)
+
+3. Inventory Module
+Pages:
+- SKU List Page
+  - Table showing SKU Code, SKU Name, Quantity, Warehouse Location, Status
+  - Actions: View, Edit, Delete
+- Create SKU Page
+  - Form with fields: SKU Code, Name, Category, Quantity, Dimensions, Weight
+- Edit SKU Page
+- Inventory Storage View
+  - Show rack/bin allocation visually (simple grid layout)
+
+4. Order Module
+Pages:
+- Orders List Page
+  - Table with Order ID, Order Type (Manual/Integrated), Status, Quantity, Created Date
+- Manual Order Creation Page
+  - Form to create order with SKU selection
+- Order Detail Page
+  - Order timeline:
+    - Created
+    - Picked
+    - Packed
+    - Manifested
+    - Dispatched
+- Picklist Page
+  - List of SKUs to pick with rack locations
+- Challan View
+  - Printable challan layout
+
+5. Storage Racks Module
+Pages:
+- Create Rack Page
+  - Rack Name, Capacity, Location
+- Rack List Page
+  - Rack occupancy progress bars
+- Stock Allocation Page
+  - Assign SKU quantities to racks
+- Stock Ageing View
+  - Table showing SKU, Rack, Inbound Date, Age (days)
+
+6. Admin Module
+Pages:
+- User Management Page
+  - Create/Edit users
+  - Assign roles (Admin, Warehouse Staff, Viewer)
+- Permissions Page
+  - Toggle access for:
+    - Order edit
+    - Inventory edit
+    - User creation
+
+UI/UX Requirements:
+- Clean modern admin dashboard style
+- Use cards, tables, modals, and badges
+- Status colors:
+  - Green = Active / Completed
+  - Yellow = In-Process
+  - Red = Breached / Broken
+- Sidebar navigation with icons
+- Mock data only (no API calls)
+
+Output Requirements:
+- Generate full React project structure
+- Include reusable components (Sidebar, Header, Cards, Tables)
+- Code should run directly in Replit
+- Focus on UI clarity and user flow
