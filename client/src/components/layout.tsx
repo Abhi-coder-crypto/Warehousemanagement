@@ -12,6 +12,7 @@ import {
   Boxes,
   History,
   ClipboardList,
+  BarChart2,
 } from "lucide-react";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -81,6 +82,11 @@ function SidebarContent() {
         <div className="pt-4 pb-2">
           <p className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Admin</p>
           <NavItem href="/users" icon={Users} label="Users & Roles" active={location === "/users"} />
+        </div>
+
+        <div className="pt-4 pb-2">
+          <p className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Reports</p>
+          <NavItem href="/analytics" icon={BarChart2} label="Analytics" active={location === "/analytics"} />
         </div>
       </div>
 

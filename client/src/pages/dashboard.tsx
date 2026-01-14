@@ -118,7 +118,7 @@ export default function Dashboard() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
         <KPICard
           title="Fulfillment"
           value="98.2%"
@@ -154,22 +154,6 @@ export default function Dashboard() {
           icon={AlertCircle}
           colorClass="bg-red-50 text-red-600"
           delay={0.2}
-        />
-        <KPICard
-          title="Low Stock"
-          value="14"
-          subtext="SKUs below min"
-          icon={TrendingUp}
-          colorClass="bg-amber-50 text-amber-600"
-          delay={0.25}
-        />
-        <KPICard
-          title="Dead Stock"
-          value="$12.4k"
-          subtext="90+ days inactive"
-          icon={BarChart3}
-          colorClass="bg-slate-100 text-slate-600"
-          delay={0.3}
         />
         <KPICard
           title="Utilization"

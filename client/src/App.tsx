@@ -20,6 +20,7 @@ import StockAllocate from "@/pages/stock-allocate";
 import StockAgeing from "@/pages/stock-ageing";
 import Users from "@/pages/users";
 import Permissions from "@/pages/permissions";
+import Analytics from "@/pages/analytics";
 import Login from "@/pages/login";
 import Layout from "@/components/layout";
 
@@ -84,6 +85,11 @@ function Router() {
       </Route>
       <Route path="/permissions">
         <Layout><Permissions /></Layout>
+      </Route>
+
+      {/* Analytics */}
+      <Route path="/analytics">
+        <Layout><Analytics /></Layout>
       </Route>
 
       <Route path="/">
