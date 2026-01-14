@@ -1,29 +1,62 @@
 import { useDashboardStats, useConnectors } from "@/hooks/use-dashboard";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Package, ShoppingCart, AlertCircle, Clock, CheckCircle2, RefreshCw } from "lucide-react";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
+import { 
+  Package, 
+  ShoppingCart, 
+  AlertCircle, 
+  Clock, 
+  CheckCircle2, 
+  RefreshCw, 
+  TrendingUp, 
+  Timer, 
+  BarChart3, 
+  PieChart as PieIcon,
+  Download
+} from "lucide-react";
+import { 
+  PieChart, 
+  Pie, 
+  Cell, 
+  ResponsiveContainer, 
+  Tooltip, 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid,
+  Legend
+} from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
-const COLORS = ["#f59e0b", "#3b82f6", "#ef4444", "#22c55e"];
+const COLORS = ["#3b82f6", "#f59e0b", "#ef4444", "#22c55e"];
 
-function StatsCard({ title, value, subtext, icon: Icon, colorClass, delay = 0 }: any) {
+function KPICard({ title, value, subtext, icon: Icon, trend, colorClass, delay = 0 }: any) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay }}
+      transition={{ duration: 0.2, delay }}
     >
-      <Card className="hover:shadow-md transition-shadow duration-200">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground mb-1">{title}</p>
-              <h3 className="text-3xl font-bold tracking-tight">{value}</h3>
-              {subtext && <p className="text-xs text-muted-foreground mt-1">{subtext}</p>}
+      <Card className="hover:shadow-md transition-shadow duration-200 border-border/50">
+        <CardContent className="p-5">
+          <div className="flex items-start justify-between">
+            <div className="space-y-1">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{title}</p>
+              <div className="flex items-baseline gap-2">
+                <h3 className="text-2xl font-bold tracking-tight">{value}</h3>
+                {trend && (
+                  <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${trend.startsWith('+') ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
+                    {trend}
+                  </span>
+                )}
+              </div>
+              {subtext && <p className="text-[11px] text-muted-foreground leading-none">{subtext}</p>}
             </div>
-            <div className={`p-3 rounded-xl bg-opacity-10 ${colorClass}`}>
-              <Icon className={`w-6 h-6 ${colorClass.replace("bg-", "text-").replace("/10", "")}`} />
+            <div className={`p-2.5 rounded-lg ${colorClass}`}>
+              <Icon className="w-5 h-5" />
             </div>
           </div>
         </CardContent>
@@ -39,145 +72,246 @@ export default function Dashboard() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-32 w-full rounded-xl" />)}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4">
+          {[1, 2, 3, 4, 5, 6, 7].map((i) => <Skeleton key={i} className="h-24 w-full rounded-xl" />)}
         </div>
-        <Skeleton className="h-[400px] w-full rounded-xl" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <Skeleton className="h-[400px] lg:col-span-2 rounded-xl" />
+          <Skeleton className="h-[400px] rounded-xl" />
+        </div>
       </div>
     );
   }
 
-  const orderData = [
+  const orderStatusData = [
     { name: "Pending", value: stats?.orders.pending || 0 },
     { name: "In Process", value: stats?.orders.inProcess || 0 },
     { name: "Breached", value: stats?.orders.breached || 0 },
+    { name: "Completed", value: 142 }, // Mock historical
   ];
 
-  const hasOrders = orderData.some(d => d.value > 0);
+  const hourlyProductivity = [
+    { hour: '08:00', orders: 12 },
+    { hour: '10:00', orders: 34 },
+    { hour: '12:00', orders: 28 },
+    { hour: '14:00', orders: 45 },
+    { hour: '16:00', orders: 38 },
+    { hour: '18:00', orders: 15 },
+  ];
+
+  const ageingBuckets = [
+    { range: '0-30 Days', value: 450, color: '#22c55e' },
+    { range: '31-60 Days', value: 120, color: '#f59e0b' },
+    { range: '61-90 Days', value: 45, color: '#f97316' },
+    { range: '90+ Days', value: 12, color: '#ef4444' },
+  ];
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard Overview</h1>
-        <p className="text-muted-foreground mt-2">Real-time warehouse performance metrics.</p>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Operations Control</h1>
+          <p className="text-sm text-muted-foreground mt-1">Strategic warehouse oversight & performance KPIs.</p>
+        </div>
+        <Button variant="outline" size="sm" className="gap-2">
+          <Download className="w-4 h-4" /> Export Report
+        </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatsCard
-          title="Pending Orders"
-          value={stats?.orders.pending}
-          subtext="Requires immediate action"
-          icon={Clock}
-          colorClass="bg-amber-500/10 text-amber-500"
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-4">
+        <KPICard
+          title="Fulfillment"
+          value="98.2%"
+          trend="+0.4%"
+          subtext="Orders vs SLA"
+          icon={CheckCircle2}
+          colorClass="bg-emerald-50 text-emerald-600"
+          delay={0.05}
+        />
+        <KPICard
+          title="Avg Pick Time"
+          value="4.2m"
+          trend="-12s"
+          subtext="Per line item"
+          icon={Timer}
+          colorClass="bg-blue-50 text-blue-600"
           delay={0.1}
         />
-        <StatsCard
-          title="In Process"
-          value={stats?.orders.inProcess}
-          subtext="Currently being picked/packed"
-          icon={RefreshCw}
-          colorClass="bg-blue-500/10 text-blue-500"
+        <KPICard
+          title="Avg Pack Time"
+          value="2.8m"
+          trend="+5s"
+          subtext="Per shipment"
+          icon={Package}
+          colorClass="bg-indigo-50 text-indigo-600"
+          delay={0.15}
+        />
+        <KPICard
+          title="SLA Breach"
+          value={`${stats?.orders.breached}`}
+          trend="+2"
+          subtext="Critical Attention"
+          icon={AlertCircle}
+          colorClass="bg-red-50 text-red-600"
           delay={0.2}
         />
-        <StatsCard
-          title="Breached SLAs"
-          value={stats?.orders.breached}
-          subtext="Overdue orders"
-          icon={AlertCircle}
-          colorClass="bg-red-500/10 text-red-500"
+        <KPICard
+          title="Low Stock"
+          value="14"
+          subtext="SKUs below min"
+          icon={TrendingUp}
+          colorClass="bg-amber-50 text-amber-600"
+          delay={0.25}
+        />
+        <KPICard
+          title="Dead Stock"
+          value="$12.4k"
+          subtext="90+ days inactive"
+          icon={BarChart3}
+          colorClass="bg-slate-100 text-slate-600"
           delay={0.3}
         />
-        <StatsCard
-          title="Total SKUs"
-          value={stats?.inventory.totalSkus}
-          subtext={`${stats?.inventory.totalQuantity} items in stock`}
-          icon={Package}
-          colorClass="bg-emerald-500/10 text-emerald-500"
-          delay={0.4}
+        <KPICard
+          title="Utilization"
+          value="84%"
+          subtext="Rack occupancy"
+          icon={PieIcon}
+          colorClass="bg-purple-50 text-purple-600"
+          delay={0.35}
         />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="col-span-1 lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Inventory Distribution</CardTitle>
-            <CardDescription>Stock levels across top categories</CardDescription>
+        <Card className="lg:col-span-2 border-border/50">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <div>
+              <CardTitle className="text-base font-bold">Hourly Productivity</CardTitle>
+              <CardDescription className="text-xs">Orders processed per time block</CardDescription>
+            </div>
+            <div className="flex gap-2">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-blue-500" />
+                <span className="text-[10px] text-muted-foreground uppercase">Orders</span>
+              </div>
+            </div>
           </CardHeader>
-          <CardContent className="h-[300px]">
-             {/* Placeholder for bar chart - using mock data since API only gives aggregates */}
+          <CardContent className="h-[300px] pt-4">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={[
-                { name: 'Electronics', stock: 120 },
-                { name: 'Apparel', stock: 250 },
-                { name: 'Home', stock: 85 },
-                { name: 'Toys', stock: 190 },
-                { name: 'Books', stock: 320 },
-              ]}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748B', fontSize: 12 }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748B', fontSize: 12 }} />
-                <Tooltip cursor={{ fill: '#F1F5F9' }} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-                <Bar dataKey="stock" fill="#4F46E5" radius={[4, 4, 0, 0]} barSize={40} />
+              <BarChart data={hourlyProductivity}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <XAxis 
+                  dataKey="hour" 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fill: '#64748b', fontSize: 11 }} 
+                />
+                <YAxis 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fill: '#64748b', fontSize: 11 }} 
+                />
+                <Tooltip 
+                  cursor={{ fill: '#f8fafc' }} 
+                  contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} 
+                />
+                <Bar dataKey="orders" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={45} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        <Card className="col-span-1">
+        <Card className="border-border/50">
           <CardHeader>
-            <CardTitle>Order Status</CardTitle>
-            <CardDescription>Current workload breakdown</CardDescription>
+            <CardTitle className="text-base font-bold">Order Breakdown</CardTitle>
+            <CardDescription className="text-xs">Current fulfillment status</CardDescription>
           </CardHeader>
-          <CardContent className="h-[300px] relative">
-            {hasOrders ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={orderData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
-                    paddingAngle={5}
-                    dataKey="value"
-                  >
-                    {orderData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="flex items-center justify-center h-full text-muted-foreground">No active orders</div>
-            )}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="text-center">
-                <span className="text-2xl font-bold">{stats?.orders.pending! + stats?.orders.inProcess! + stats?.orders.breached!}</span>
-                <p className="text-xs text-muted-foreground uppercase">Total</p>
-              </div>
-            </div>
+          <CardContent className="h-[300px] pt-4">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={orderStatusData}
+                  cx="50%"
+                  cy="45%"
+                  innerRadius={70}
+                  outerRadius={95}
+                  paddingAngle={5}
+                  dataKey="value"
+                >
+                  {orderStatusData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} strokeWidth={0} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend 
+                  verticalAlign="bottom" 
+                  height={36} 
+                  iconType="circle" 
+                  iconSize={8}
+                  wrapperStyle={{ fontSize: '11px', paddingTop: '20px' }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {connectors?.map((connector) => (
-          <Card key={connector.id} className="border-l-4 border-l-primary">
-            <CardContent className="p-6 flex items-center justify-between">
-              <div>
-                <p className="font-semibold text-foreground">{connector.name}</p>
-                <p className="text-xs text-muted-foreground mt-1">Last synced: {connector.lastSync ? new Date(connector.lastSync).toLocaleTimeString() : 'Never'}</p>
-              </div>
-              <div className={`px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1.5 
-                ${connector.status === 'active' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
-                <span className={`w-1.5 h-1.5 rounded-full ${connector.status === 'active' ? 'bg-emerald-500' : 'bg-red-500'}`} />
-                {connector.status === 'active' ? 'Connected' : 'Error'}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="border-border/50">
+          <CardHeader>
+            <CardTitle className="text-base font-bold">Inventory Ageing</CardTitle>
+            <CardDescription className="text-xs">Stock volume by time in warehouse</CardDescription>
+          </CardHeader>
+          <CardContent className="h-[200px] pt-4">
+            <div className="flex items-end justify-between h-full gap-4">
+              {ageingBuckets.map((bucket) => (
+                <div key={bucket.range} className="flex-1 flex flex-col items-center gap-2">
+                  <div className="w-full bg-slate-100 rounded-sm relative group overflow-hidden" style={{ height: '140px' }}>
+                    <div 
+                      className="absolute bottom-0 w-full rounded-sm transition-all duration-500" 
+                      style={{ 
+                        height: `${(bucket.value / 450) * 100}%`,
+                        backgroundColor: bucket.color
+                      }}
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="text-[10px] font-bold text-slate-900 bg-white/90 px-1.5 py-0.5 rounded shadow-sm">
+                        {bucket.value}
+                      </span>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-medium text-muted-foreground whitespace-nowrap">{bucket.range}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-border/50">
+          <CardHeader>
+            <CardTitle className="text-base font-bold">API Connector Status</CardTitle>
+            <CardDescription className="text-xs">External integration health</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-2">
+            <div className="space-y-3">
+              {connectors?.map((connector) => (
+                <div key={connector.id} className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-slate-50/50">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-2 h-2 rounded-full ${connector.status === 'active' ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'}`} />
+                    <div>
+                      <p className="text-xs font-bold text-slate-900">{connector.name}</p>
+                      <p className="text-[10px] text-muted-foreground">Sync: {connector.lastSync ? new Date(connector.lastSync).toLocaleTimeString() : 'Never'}</p>
+                    </div>
+                  </div>
+                  <Badge variant="outline" className={`text-[10px] h-5 ${connector.status === 'active' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-red-50 text-red-700 border-red-200'}`}>
+                    {connector.status === 'active' ? 'Operational' : 'Failed'}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
 }
+

@@ -52,6 +52,14 @@ export default function Inventory() {
           <p className="text-muted-foreground mt-2">Manage products, stock levels, and locations.</p>
         </div>
         <div className="flex gap-3">
+          <Button variant="outline" className="gap-2" onClick={() => {
+            const csvContent = "data:text/csv;charset=utf-8," + 
+              "SKU Code,Name,Category,Location,Status,Quantity\n" +
+              filteredSkus?.map(s => `${s.code},${s.name},${s.category},${s.location},${s.status},${s.quantity}`).join("\n");
+            window.open(encodeURI(csvContent));
+          }}>
+            <Download className="w-4 h-4" /> Export CSV
+          </Button>
           <Button variant="outline" onClick={() => setLocation("/inventory/storage")}>
             <Grid3X3 className="w-4 h-4 mr-2" /> Storage View
           </Button>

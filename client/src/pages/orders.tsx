@@ -66,6 +66,14 @@ export default function Orders() {
           <p className="text-muted-foreground mt-2">Manage customer orders and fulfillment.</p>
         </div>
         <div className="flex gap-3">
+          <Button variant="outline" className="gap-2" onClick={() => {
+            const csvContent = "data:text/csv;charset=utf-8," + 
+              "Order ID,Customer,Type,Date,Status,Quantity\n" +
+              filteredOrders?.map(o => `${o.orderId},${o.customer},${o.type},${o.createdAt},${o.status},${o.totalQuantity}`).join("\n");
+            window.open(encodeURI(csvContent));
+          }}>
+            <Download className="w-4 h-4" /> Export
+          </Button>
           <Button variant="outline" onClick={() => setLocation("/orders/picklist")}>
             <ClipboardList className="w-4 h-4 mr-2" /> Picklist
           </Button>
