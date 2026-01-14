@@ -5,12 +5,9 @@ import {
   ShoppingCart, 
   AlertCircle, 
   CheckCircle2, 
-  TrendingUp, 
   Box,
-  Truck,
-  Download,
-  LayoutDashboard,
-  ClipboardList
+  ClipboardList,
+  Download
 } from "lucide-react";
 import { 
   PieChart, 
