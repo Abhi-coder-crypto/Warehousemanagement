@@ -1,0 +1,117 @@
+Enhance the Picklist and Stock Ageing sections in the existing Warehouse Management System (WMS) UI.
+Do NOT change the tech stack, routing, or overall project structure.
+Focus on operational depth, realism, and professional warehouse usability.
+
+--------------------------------
+1. PICKLIST SECTION (WAREHOUSE OPERATOR GRADE)
+--------------------------------
+
+A. Picklist List Page
+Upgrade the picklist list view with:
+- Table columns:
+  - Picklist ID
+  - Order ID(s)
+  - Priority (High / Medium / Low)
+  - Warehouse
+  - Total SKUs
+  - Total Quantity
+  - Status (Not Started / In Progress / Completed)
+  - Assigned Picker
+  - Created Time
+- Filters at top:
+  - Priority
+  - Status
+  - Picker
+  - Warehouse
+  - Time window
+- Export Picklist Summary (CSV & Excel) button at top-right
+
+B. Picklist Detail Page
+Redesign picklist detail page to reflect real warehouse picking flow.
+
+Table columns:
+- Pick Sequence (location-optimized)
+- SKU Code
+- SKU Name
+- Zone
+- Rack
+- Bin
+- Required Qty
+- Picked Qty
+- UOM
+- Handling Type (Fragile / Heavy / Normal)
+- Line Status
+
+Features:
+- Location-based picking sequence
+- Visual zone separation
+- Line-level status badges
+- Highlight partial picks and shortages
+- Sticky table header for long picklists
+- Tablet-friendly dense layout
+
+C. Picking Actions
+- Start / Pause / Complete picklist actions (mock)
+- Manual picked quantity confirmation
+- Short-pick reason selection (Damaged / Missing / Not Found)
+- Real-time pick progress bar
+
+D. Export & Print
+- Export picklist details (CSV & Excel)
+- Print-friendly layout optimized for warehouse floor usage
+
+--------------------------------
+2. STOCK AGEING SECTION (INVENTORY HEALTH & RISK VIEW)
+--------------------------------
+
+A. Stock Ageing Overview
+Add KPI summary cards:
+- Total Aged Stock Quantity
+- Total Aged Stock Value
+- % Inventory Over 90 Days
+- Dead Stock Quantity
+- Slow-Moving SKU Count
+
+B. Ageing Breakdown Table
+Upgrade the ageing table with:
+- SKU Code
+- SKU Name
+- Category
+- Warehouse
+- Zone
+- Rack
+- Bin
+- Inbound Date
+- Age (Days)
+- Ageing Bucket (0–30 / 31–60 / 61–90 / 90+)
+- Available Qty
+- Reserved Qty
+- Inventory Value
+- Risk Level (Low / Medium / High)
+
+Filters:
+- Warehouse
+- Category
+- Ageing Bucket
+- Risk Level
+- Inbound Date Range
+
+C. Visual Analytics
+Add charts:
+- Inventory Ageing Bucket Distribution
+- Top 10 SKUs by Age
+- Dead Stock vs Active Stock comparison
+
+D. Export
+- Export Stock Ageing report (CSV & Excel)
+- Export respects applied filters
+
+--------------------------------
+3. UX & VISUAL MATURITY
+--------------------------------
+- Use dense tables and professional spacing
+- Status and risk shown using badges
+- Neutral enterprise colors (grey, slate, blue)
+- Focus on operational clarity over decoration
+
+Final result should look suitable for a real warehouse client demo and daily warehouse operations.
