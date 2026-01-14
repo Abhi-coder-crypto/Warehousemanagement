@@ -1,0 +1,188 @@
+Create a frontend-only UI prototype for an enterprise-grade Warehouse Management System (WMS).
+
+Tech Stack:
+- React + TypeScript
+- Tailwind CSS
+- Modern admin dashboard layout
+- Mock/static data only (no backend, no APIs)
+- Fully responsive
+
+User Role:
+- Warehouse Client / Admin
+
+Goal:
+The UI must look professional, realistic, and suitable for a real warehouse client demo.
+Avoid childish layouts. Focus on operational depth, analytics, and usability.
+
+--------------------------------------------------
+GLOBAL UI REQUIREMENTS
+--------------------------------------------------
+- Neutral professional color palette (grey, slate, blue)
+- Dense tables for operational screens
+- Filters at top of all tables
+- Status shown using badges
+- Export buttons (CSV & Excel) where applicable
+- Sidebar navigation with icons
+- Top header with warehouse name, user profile, notifications
+
+--------------------------------------------------
+1. AUTH
+--------------------------------------------------
+Login page (mock only)
+- Email & password
+- No real authentication
+
+--------------------------------------------------
+2. DASHBOARD (ADVANCED ANALYTICS)
+--------------------------------------------------
+Dashboard must be decision-oriented with KPIs and charts.
+
+KPI Cards:
+- Pending Orders
+- In-Process Orders
+- Breached Orders
+- Order Fulfillment Rate (%)
+- Average Pick Time
+- Average Pack Time
+- Low Stock SKUs
+- Dead Stock Value
+
+Charts:
+- Orders by Status (stacked bar)
+- Orders by Hour (productivity)
+- Inventory Ageing Buckets (0–30, 31–60, 61–90, 90+)
+- Top 10 SKUs by Quantity
+- Rack Utilization Heatmap
+
+--------------------------------------------------
+3. INVENTORY MODULE
+--------------------------------------------------
+Pages:
+
+A. SKU List
+- Table: SKU Code, Name, Category, Available Qty, Reserved Qty, Warehouse, Status
+- Filters: Category, Warehouse, Stock Status
+- Actions: View, Edit, Delete
+- Export: CSV & Excel
+
+B. Create / Edit SKU
+- SKU Code
+- Name
+- Category
+- Dimensions
+- Weight
+- Handling Type (Fragile/Heavy/Normal)
+
+C. Inventory Storage View
+- Location-wise stock table (Warehouse → Zone → Rack → Bin)
+- Export location-wise inventory
+
+D. Stock Ageing
+- Table: SKU, Rack, Inbound Date, Age (days), Quantity
+- Export ageing report
+
+--------------------------------------------------
+4. ORDER MODULE
+--------------------------------------------------
+Pages:
+
+A. Orders List
+- Table: Order ID, Order Type (Manual/Integrated), Status, SKU Count, Qty, Created Date
+- Filters: Date range, Status, Order Type
+- Export orders
+
+B. Manual Order Creation
+- SKU selection
+- Quantity
+- Priority
+- Warehouse
+
+C. Order Details
+- Order timeline:
+  Created → Picked → Packed → Manifested → Dispatched
+- Inventory impact shown per stage
+
+D. Picklist
+- SKU, Qty, Rack, Bin
+- Export picklist
+
+E. Challan / Manifest
+- Printable challan layout
+- Export PDF / CSV
+
+--------------------------------------------------
+5. STORAGE RACKS MODULE (WAREHOUSE-GRADE)
+--------------------------------------------------
+Pages:
+
+A. Rack Management
+- Create racks with capacity, zone, warehouse
+- Rack list with occupancy progress bars
+- Export rack utilization
+
+B. ADVANCED STOCK ALLOCATION (CRITICAL)
+This page must NOT be a simple form.
+
+Structure:
+
+1. SKU Selection Section
+- Searchable SKU
+- SKU details (dimensions, weight, handling type)
+
+2. Smart Rack Suggestions Table
+Columns:
+- Rack
+- Zone
+- Available Capacity
+- Distance to Packing Area
+- FIFO Match
+- Recommended (badge)
+
+3. Allocation Builder
+- Allocate quantity across multiple racks
+- Capacity validation per rack
+- Warnings for overfill
+
+4. Allocation Rules
+- Enforce FIFO
+- Avoid mixed SKUs
+- Prioritize nearest rack
+- Allow overflow racks
+
+5. Allocation Summary
+- Total Qty Allocated
+- Space Used %
+- Estimated Picking Impact
+
+Export rack-wise stock allocation.
+
+--------------------------------------------------
+6. ADMIN MODULE
+--------------------------------------------------
+Pages:
+
+A. User Management
+- Create/Edit users
+- Roles: Admin, Warehouse Staff, Viewer
+
+B. Permissions
+- Toggle access for:
+  - Order Edit
+  - Inventory Edit
+  - User Creation
+
+--------------------------------------------------
+EXPORT FUNCTIONALITY
+--------------------------------------------------
+- Add Export buttons (CSV & Excel) to all major tables
+- Export should respect applied filters
+- Place Export buttons top-right of tables
+
+--------------------------------------------------
+OUTPUT REQUIREMENTS
+--------------------------------------------------
+- Complete React project structure
+- Reusable components (Sidebar, Header, Table, Filters, KPI Cards)
+- Clean, enterprise-grade UI
+- Code should run directly in Replit
+- Focus on realistic warehouse workflows and professional UX

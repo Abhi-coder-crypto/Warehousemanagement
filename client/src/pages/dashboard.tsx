@@ -1,4 +1,5 @@
 import { useDashboardStats, useConnectors } from "@/hooks/use-dashboard";
+import { useSkus } from "@/hooks/use-inventory";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { 
   Package, 
@@ -7,7 +8,9 @@ import {
   CheckCircle2, 
   Box,
   ClipboardList,
-  Download
+  Download,
+  TrendingDown,
+  Timer
 } from "lucide-react";
 import { 
   PieChart, 
@@ -57,16 +60,13 @@ function KPICard({ title, value, subtext, icon: Icon, colorClass, delay = 0 }: a
 export default function Dashboard() {
   const { data: stats, isLoading } = useDashboardStats();
   const { data: connectors } = useConnectors();
+  const { data: skus } = useSkus();
 
   if (isLoading) {
     return (
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-24 w-full rounded-xl" />)}
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <Skeleton className="h-[400px] lg:col-span-2 rounded-xl" />
-          <Skeleton className="h-[400px] rounded-xl" />
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => <Skeleton key={i} className="h-24 w-full rounded-xl" />)}
         </div>
       </div>
     );
@@ -88,6 +88,11 @@ export default function Dashboard() {
     { hour: '18:00', orders: 15 },
   ];
 
+  const topSkus = skus?.slice(0, 5).map(s => ({
+    name: s.code,
+    qty: s.quantity
+  })) || [];
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -100,6 +105,7 @@ export default function Dashboard() {
         </Button>
       </div>
 
+      {/* KPI Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard
           title="Total SKUs"
@@ -133,6 +139,38 @@ export default function Dashboard() {
           colorClass="bg-red-50 text-red-600"
           delay={0.2}
         />
+        <KPICard
+          title="Fulfillment"
+          value="98.2%"
+          subtext="Orders vs SLA"
+          icon={CheckCircle2}
+          colorClass="bg-emerald-50 text-emerald-600"
+          delay={0.25}
+        />
+        <KPICard
+          title="Avg Pick Time"
+          value="4.2m"
+          subtext="Operational speed"
+          icon={Timer}
+          colorClass="bg-blue-50 text-blue-600"
+          delay={0.3}
+        />
+        <KPICard
+          title="Low Stock"
+          value={skus?.filter(s => s.quantity < 20).length || 0}
+          subtext="Action required"
+          icon={TrendingDown}
+          colorClass="bg-amber-50 text-amber-600"
+          delay={0.35}
+        />
+        <KPICard
+          title="Utilization"
+          value="84%"
+          subtext="Rack occupancy"
+          icon={LayoutDashboard}
+          colorClass="bg-blue-50 text-blue-600"
+          delay={0.4}
+        />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -142,30 +180,14 @@ export default function Dashboard() {
               <CardTitle className="text-base font-bold">Activity Log</CardTitle>
               <CardDescription className="text-xs">Hourly order processing volume</CardDescription>
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-blue-500" />
-              <span className="text-[10px] font-bold text-muted-foreground uppercase">Orders</span>
-            </div>
           </CardHeader>
           <CardContent className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={hourlyProductivity}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis 
-                  dataKey="hour" 
-                  axisLine={false} 
-                  tickLine={false} 
-                  tick={{ fill: '#94a3b8', fontSize: 10 }} 
-                />
-                <YAxis 
-                  axisLine={false} 
-                  tickLine={false} 
-                  tick={{ fill: '#94a3b8', fontSize: 10 }} 
-                />
-                <Tooltip 
-                  cursor={{ fill: '#f8fafc' }} 
-                  contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: '11px' }} 
-                />
+                <XAxis dataKey="hour" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 10 }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 10 }} />
+                <Tooltip cursor={{ fill: '#f8fafc' }} contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '11px' }} />
                 <Bar dataKey="orders" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={40} />
               </BarChart>
             </ResponsiveContainer>
@@ -175,62 +197,68 @@ export default function Dashboard() {
         <Card className="border-border/50 shadow-sm">
           <CardHeader className="pb-4">
             <CardTitle className="text-base font-bold">Order Status</CardTitle>
-            <CardDescription className="text-xs">Breakdown of current orders</CardDescription>
+            <CardDescription className="text-xs">Current fulfillment breakdown</CardDescription>
           </CardHeader>
           <CardContent className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie
-                  data={orderStatusData}
-                  cx="50%"
-                  cy="45%"
-                  innerRadius={70}
-                  outerRadius={90}
-                  paddingAngle={8}
-                  dataKey="value"
-                >
+                <Pie data={orderStatusData} cx="50%" cy="45%" innerRadius={70} outerRadius={90} paddingAngle={8} dataKey="value">
                   {orderStatusData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} strokeWidth={0} />
                   ))}
                 </Pie>
                 <Tooltip />
-                <Legend 
-                  verticalAlign="bottom" 
-                  height={40} 
-                  iconType="circle" 
-                  iconSize={6}
-                  wrapperStyle={{ fontSize: '10px', textTransform: 'uppercase', color: '#64748b', fontWeight: 600 }}
-                />
+                <Legend verticalAlign="bottom" height={40} iconType="circle" iconSize={6} wrapperStyle={{ fontSize: '10px', textTransform: 'uppercase', color: '#64748b', fontWeight: 600 }} />
               </PieChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
       </div>
 
-      <Card className="border-border/50 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-base font-bold">API Integration Status</CardTitle>
-          <CardDescription className="text-xs">Connectivity health with external platforms</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {connectors?.map((connector) => (
-              <div key={connector.id} className="flex items-center justify-between p-4 rounded-xl border border-border/40 bg-slate-50/30">
-                <div className="flex items-center gap-3">
-                  <div className={`w-2 h-2 rounded-full ${connector.status === 'active' ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'}`} />
-                  <div>
-                    <p className="text-sm font-semibold text-slate-900">{connector.name}</p>
-                    <p className="text-[10px] text-muted-foreground uppercase">Last Sync: {connector.lastSync ? new Date(connector.lastSync).toLocaleTimeString() : 'Never'}</p>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="border-border/50 shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-base font-bold">Top 5 SKUs by Quantity</CardTitle>
+            <CardDescription className="text-xs">Highest volume items in stock</CardDescription>
+          </CardHeader>
+          <CardContent className="h-[250px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={topSkus} layout="vertical">
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
+                <XAxis type="number" hide />
+                <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 10, fontWeight: 600 }} width={80} />
+                <Tooltip />
+                <Bar dataKey="qty" fill="#3b82f6" radius={[0, 4, 4, 0]} barSize={20} />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        <Card className="border-border/50 shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-base font-bold">Integration Status</CardTitle>
+            <CardDescription className="text-xs">External platform connectivity</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {connectors?.map((connector) => (
+                <div key={connector.id} className="flex items-center justify-between p-4 rounded-xl border border-border/40 bg-slate-50/30">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-2 h-2 rounded-full ${connector.status === 'active' ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'}`} />
+                    <div>
+                      <p className="text-sm font-semibold text-slate-900">{connector.name}</p>
+                      <p className="text-[10px] text-muted-foreground uppercase">Last Sync: {connector.lastSync ? new Date(connector.lastSync).toLocaleTimeString() : 'Never'}</p>
+                    </div>
                   </div>
+                  <Badge variant="secondary" className={`text-[10px] font-bold ${connector.status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>
+                    {connector.status === 'active' ? 'Operational' : 'Offline'}
+                  </Badge>
                 </div>
-                <Badge variant="secondary" className={`text-[10px] font-bold ${connector.status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>
-                  {connector.status === 'active' ? 'Active' : 'Offline'}
-                </Badge>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

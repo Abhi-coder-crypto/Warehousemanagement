@@ -28,6 +28,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Plus, Trash2, Search, Filter, Edit2, Grid3X3, Download } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useLocation } from "wouter";
@@ -48,11 +55,11 @@ export default function Inventory() {
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Inventory</h1>
-          <p className="text-muted-foreground mt-2">Manage products, stock levels, and locations.</p>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Inventory</h1>
+          <p className="text-sm text-muted-foreground mt-1">Manage products, stock levels, and locations.</p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" className="gap-2" onClick={() => {
+          <Button variant="outline" className="gap-2 h-9 text-xs font-semibold border-slate-200" onClick={() => {
             const csvContent = "data:text/csv;charset=utf-8," + 
               "SKU Code,Name,Category,Location,Status,Quantity\n" +
               filteredSkus?.map(s => `${s.code},${s.name},${s.category},${s.location},${s.status},${s.quantity}`).join("\n");
@@ -60,7 +67,7 @@ export default function Inventory() {
           }}>
             <Download className="w-4 h-4" /> Export CSV
           </Button>
-          <Button variant="outline" onClick={() => setLocation("/inventory/storage")}>
+          <Button variant="outline" className="h-9 text-xs font-semibold border-slate-200" onClick={() => setLocation("/inventory/storage")}>
             <Grid3X3 className="w-4 h-4 mr-2" /> Storage View
           </Button>
           <CreateSkuDialog open={open} onOpenChange={setOpen} />
@@ -72,12 +79,12 @@ export default function Inventory() {
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search by SKU name or code..."
-            className="pl-9 border-border/50 bg-background/50"
+            className="pl-9 h-9 border-border/50 bg-background/50 text-sm"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <Button variant="outline" className="gap-2">
+        <Button variant="outline" className="gap-2 h-9 text-xs font-bold uppercase border-slate-200">
           <Filter className="w-4 h-4" />
           Filters
         </Button>
@@ -86,49 +93,49 @@ export default function Inventory() {
       <div className="bg-card rounded-lg border border-border/60 shadow-sm overflow-hidden">
         <Table>
           <TableHeader className="bg-slate-50/50">
-            <TableRow>
-              <TableHead className="py-2 text-[11px] font-bold uppercase tracking-wider">SKU Code</TableHead>
-              <TableHead className="py-2 text-[11px] font-bold uppercase tracking-wider">Name</TableHead>
-              <TableHead className="py-2 text-[11px] font-bold uppercase tracking-wider">Category</TableHead>
-              <TableHead className="py-2 text-[11px] font-bold uppercase tracking-wider">Location</TableHead>
-              <TableHead className="py-2 text-[11px] font-bold uppercase tracking-wider">Status</TableHead>
-              <TableHead className="py-2 text-[11px] font-bold uppercase tracking-wider text-right">Quantity</TableHead>
-              <TableHead className="py-2 text-[11px] font-bold uppercase tracking-wider text-right">Actions</TableHead>
+            <TableRow className="hover:bg-transparent border-b border-border/50">
+              <TableHead className="py-3 text-[10px] font-bold uppercase tracking-widest">SKU Code</TableHead>
+              <TableHead className="py-3 text-[10px] font-bold uppercase tracking-widest">Name</TableHead>
+              <TableHead className="py-3 text-[10px] font-bold uppercase tracking-widest">Category</TableHead>
+              <TableHead className="py-3 text-[10px] font-bold uppercase tracking-widest">Location</TableHead>
+              <TableHead className="py-3 text-[10px] font-bold uppercase tracking-widest">Status</TableHead>
+              <TableHead className="py-3 text-[10px] font-bold uppercase tracking-widest text-right">Quantity</TableHead>
+              <TableHead className="py-3 text-[10px] font-bold uppercase tracking-widest text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              <TableRow><TableCell colSpan={7} className="h-24 text-center">Loading inventory...</TableCell></TableRow>
+              <TableRow><TableCell colSpan={7} className="h-24 text-center text-xs font-bold uppercase text-muted-foreground">Loading inventory...</TableCell></TableRow>
             ) : filteredSkus?.length === 0 ? (
-              <TableRow><TableCell colSpan={7} className="h-24 text-center text-muted-foreground">No items found.</TableCell></TableRow>
+              <TableRow><TableCell colSpan={7} className="h-24 text-center text-xs font-bold uppercase text-muted-foreground">No items found.</TableCell></TableRow>
             ) : (
               filteredSkus?.map((sku) => (
-                <TableRow key={sku.id} className="hover:bg-slate-50/50 transition-colors border-b border-border/40">
-                  <TableCell className="py-2 font-mono text-xs font-bold text-blue-700">{sku.code}</TableCell>
-                  <TableCell className="py-2 text-xs font-semibold">{sku.name}</TableCell>
-                  <TableCell className="py-2 text-xs text-slate-600">{sku.category}</TableCell>
-                  <TableCell className="py-2 text-xs">
+                <TableRow key={sku.id} className="hover:bg-slate-50/30 transition-colors border-b border-border/40">
+                  <TableCell className="py-4 font-mono text-xs font-bold text-blue-700">{sku.code}</TableCell>
+                  <TableCell className="py-4 text-sm font-semibold text-slate-900">{sku.name}</TableCell>
+                  <TableCell className="py-4 text-xs font-medium text-slate-600 uppercase">{sku.category}</TableCell>
+                  <TableCell className="py-4 text-xs text-slate-600">
                     <div className="flex items-center gap-1">
-                      <Grid3X3 className="w-3 h-3 text-muted-foreground" />
-                      <span className="font-medium">{sku.location || "Unassigned"}</span>
+                      <Grid3X3 className="w-3 h-3 text-slate-400" />
+                      <span className="font-bold uppercase">{sku.location || "Unassigned"}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="py-2">
-                    <Badge variant="outline" className={`text-[10px] font-bold uppercase h-5 ${sku.status === 'active' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-100 text-slate-600'}`}>
+                  <TableCell className="py-4">
+                    <Badge variant="outline" className={`text-[9px] font-bold uppercase h-5 ${sku.status === 'active' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-100 text-slate-600'}`}>
                       {sku.status}
                     </Badge>
                   </TableCell>
-                  <TableCell className="py-2 text-right">
-                    <span className={`text-xs font-bold ${sku.quantity < 10 ? "text-red-600" : "text-slate-900"}`}>
+                  <TableCell className="py-4 text-right">
+                    <span className={`text-sm font-bold ${sku.quantity < 10 ? "text-red-600" : "text-slate-900"}`}>
                       {sku.quantity}
                     </span>
                   </TableCell>
-                  <TableCell className="py-2 text-right">
+                  <TableCell className="py-4 text-right">
                     <div className="flex justify-end gap-1">
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-7 w-7 text-muted-foreground hover:text-primary"
+                        className="h-8 w-8 text-slate-400 hover:text-blue-600 hover:bg-blue-50"
                         onClick={() => setLocation(`/inventory/edit/${sku.id}`)}
                       >
                         <Edit2 className="w-3.5 h-3.5" />
@@ -136,7 +143,7 @@ export default function Inventory() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                        className="h-8 w-8 text-slate-400 hover:text-red-600 hover:bg-red-50"
                         onClick={() => {
                           if (confirm('Are you sure you want to delete this SKU?')) {
                             deleteSku.mutate(sku.id);
@@ -170,6 +177,7 @@ function CreateSkuDialog({ open, onOpenChange }: { open: boolean; onOpenChange: 
       location: "",
       dimensions: "",
       weight: "",
+      handlingType: "Normal",
     },
   });
 
@@ -185,8 +193,8 @@ function CreateSkuDialog({ open, onOpenChange }: { open: boolean; onOpenChange: 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button className="shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all">
-          <Plus className="w-4 h-4 mr-2" /> Add SKU
+        <Button className="h-9 text-xs font-semibold gap-2">
+          <Plus className="w-4 h-4" /> Add SKU
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
@@ -201,8 +209,8 @@ function CreateSkuDialog({ open, onOpenChange }: { open: boolean; onOpenChange: 
                 name="code"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>SKU Code</FormLabel>
-                    <FormControl><Input placeholder="E.g., SKU-001" {...field} /></FormControl>
+                    <FormLabel className="text-xs font-bold uppercase text-muted-foreground">SKU Code</FormLabel>
+                    <FormControl><Input placeholder="E.g., SKU-001" {...field} className="h-9" /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -212,8 +220,8 @@ function CreateSkuDialog({ open, onOpenChange }: { open: boolean; onOpenChange: 
                 name="category"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Category</FormLabel>
-                    <FormControl><Input placeholder="E.g., Electronics" {...field} /></FormControl>
+                    <FormLabel className="text-xs font-bold uppercase text-muted-foreground">Category</FormLabel>
+                    <FormControl><Input placeholder="E.g., Electronics" {...field} className="h-9" /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -224,8 +232,8 @@ function CreateSkuDialog({ open, onOpenChange }: { open: boolean; onOpenChange: 
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Product Name</FormLabel>
-                  <FormControl><Input placeholder="E.g., Wireless Mouse" {...field} /></FormControl>
+                  <FormLabel className="text-xs font-bold uppercase text-muted-foreground">Product Name</FormLabel>
+                  <FormControl><Input placeholder="E.g., Wireless Mouse" {...field} className="h-9" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -233,31 +241,67 @@ function CreateSkuDialog({ open, onOpenChange }: { open: boolean; onOpenChange: 
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="quantity"
+                name="dimensions"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Initial Quantity</FormLabel>
-                    <FormControl>
-                      <Input type="number" {...field} onChange={e => field.onChange(Number(e.target.value))} />
-                    </FormControl>
+                    <FormLabel className="text-xs font-bold uppercase text-muted-foreground">Dimensions</FormLabel>
+                    <FormControl><Input placeholder="E.g., 10x10x10cm" {...field} className="h-9" /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               <FormField
                 control={form.control}
-                name="location"
+                name="weight"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Location (Optional)</FormLabel>
-                    <FormControl><Input placeholder="E.g., A-12" {...field} value={field.value || ''} /></FormControl>
+                    <FormLabel className="text-xs font-bold uppercase text-muted-foreground">Weight</FormLabel>
+                    <FormControl><Input placeholder="E.g., 0.5kg" {...field} className="h-9" /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
-            <div className="flex justify-end pt-4">
-              <Button type="submit" disabled={createSku.isPending}>
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="handlingType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs font-bold uppercase text-muted-foreground">Handling Type</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger className="h-9 border-slate-200">
+                          <SelectValue placeholder="Handling Type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="Normal">Normal</SelectItem>
+                        <SelectItem value="Fragile">Fragile</SelectItem>
+                        <SelectItem value="Heavy">Heavy</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="quantity"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs font-bold uppercase text-muted-foreground">Initial Qty</FormLabel>
+                    <FormControl>
+                      <Input type="number" {...field} onChange={e => field.onChange(Number(e.target.value))} className="h-9" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="flex justify-end pt-4 gap-3">
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="h-9 text-xs">Cancel</Button>
+              <Button type="submit" disabled={createSku.isPending} className="h-9 text-xs font-bold uppercase">
                 {createSku.isPending ? "Creating..." : "Create SKU"}
               </Button>
             </div>
