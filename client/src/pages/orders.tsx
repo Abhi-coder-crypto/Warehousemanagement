@@ -37,9 +37,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Eye, Printer } from "lucide-react";
+import { Plus, Eye, Printer, ClipboardList, Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 
 const createOrderFormSchema = insertOrderSchema.extend({
   items: z.array(z.object({ skuId: z.coerce.number(), quantity: z.coerce.number() })).min(1, "Add at least one item"),
@@ -50,6 +50,13 @@ type CreateOrderFormValues = z.infer<typeof createOrderFormSchema>;
 export default function Orders() {
   const { data: orders, isLoading } = useOrders();
   const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [, setLocation] = useLocation();
+
+  const filteredOrders = orders?.filter((order) =>
+    order.orderId.toLowerCase().includes(search.toLowerCase()) ||
+    order.customer.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="space-y-8">
@@ -58,7 +65,24 @@ export default function Orders() {
           <h1 className="text-3xl font-bold tracking-tight">Orders</h1>
           <p className="text-muted-foreground mt-2">Manage customer orders and fulfillment.</p>
         </div>
-        <CreateOrderDialog open={open} onOpenChange={setOpen} />
+        <div className="flex gap-3">
+          <Button variant="outline" onClick={() => setLocation("/orders/picklist")}>
+            <ClipboardList className="w-4 h-4 mr-2" /> Picklist
+          </Button>
+          <CreateOrderDialog open={open} onOpenChange={setOpen} />
+        </div>
+      </div>
+
+      <div className="flex items-center gap-4 bg-card p-4 rounded-xl border border-border shadow-sm">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search by Order ID or Customer..."
+            className="pl-9 border-border/50 bg-background/50"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
       </div>
 
       <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
@@ -77,10 +101,10 @@ export default function Orders() {
           <TableBody>
             {isLoading ? (
               <TableRow><TableCell colSpan={7} className="h-24 text-center">Loading orders...</TableCell></TableRow>
-            ) : orders?.length === 0 ? (
+            ) : filteredOrders?.length === 0 ? (
               <TableRow><TableCell colSpan={7} className="h-24 text-center text-muted-foreground">No orders found.</TableCell></TableRow>
             ) : (
-              orders?.map((order) => (
+              filteredOrders?.map((order) => (
                 <TableRow key={order.id} className="hover:bg-muted/20 transition-colors">
                   <TableCell className="font-mono font-medium">{order.orderId}</TableCell>
                   <TableCell className="font-medium">{order.customer}</TableCell>
@@ -97,7 +121,7 @@ export default function Orders() {
                           <Eye className="w-4 h-4" />
                         </Button>
                       </Link>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground" onClick={() => setLocation(`/orders/challan/${order.id}`)}>
                         <Printer className="w-4 h-4" />
                       </Button>
                     </div>
