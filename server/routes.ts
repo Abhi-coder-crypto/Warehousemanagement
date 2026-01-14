@@ -64,7 +64,8 @@ export async function registerRoutes(
 
   app.post(api.orders.create.path, async (req, res) => {
     const { items, ...orderData } = api.orders.create.input.parse(req.body);
-    const order = await storage.createOrder(orderData, items);
+    const orderItems = items.map(item => ({ ...item, orderId: 0 })); // orderId will be set by createOrder
+    const order = await storage.createOrder(orderData, orderItems);
     res.status(201).json(order);
   });
 
@@ -170,17 +171,17 @@ async function seedData() {
     permissions: { orderEdit: true, inventoryEdit: true, userCreation: true }
   });
 
-  await storage.createSku({ code: "SKU-001", name: "Wireless Mouse", category: "Electronics", quantity: 150, dimensions: "10x5x2", weight: "0.2kg", status: "active", location: "A1-01" });
+  const sku1 = await storage.createSku({ code: "SKU-001", name: "Wireless Mouse", category: "Electronics", quantity: 150, dimensions: "10x5x2", weight: "0.2kg", status: "active", location: "A1-01" });
   await storage.createSku({ code: "SKU-002", name: "Mechanical Keyboard", category: "Electronics", quantity: 50, dimensions: "40x15x5", weight: "1.2kg", status: "active", location: "A1-02" });
   await storage.createSku({ code: "SKU-003", name: "Office Chair", category: "Furniture", quantity: 10, dimensions: "100x50x50", weight: "15kg", status: "active", location: "B2-01" });
   
-  await storage.createOrder({ orderId: "ORD-001", customer: "John Doe", type: "Manual", status: "pending", totalQuantity: 2 }, [{ skuId: 1, quantity: 1 }, { skuId: 2, quantity: 1 }]);
+  await storage.createOrder({ orderId: "ORD-001", customer: "John Doe", type: "Manual", status: "pending", totalQuantity: 2 }, [{ skuId: sku1.id, quantity: 1, orderId: 0 }]);
   
   const rack1 = await storage.createRack({ name: "Rack A", locationCode: "Zone 1", capacity: 1000, warehouse: "Main" });
-  await storage.allocateStock({ skuId: 1, rackId: rack1.id, quantity: 100, reservedQty: 0, value: 10000 });
+  await storage.allocateStock({ skuId: sku1.id, rackId: rack1.id, quantity: 100, reservedQty: 0, value: 10000 });
 
   await storage.createPicklist({ orderIds: [1], priority: "High", warehouse: "Main", status: "Not Started" }, [
-    { skuId: 1, rackId: rack1.id, requiredQty: 5, pickedQty: 0, status: "Pending", pickSequence: 1 }
+    { skuId: sku1.id, rackId: rack1.id, picklistId: 0, requiredQty: 5, pickedQty: 0, status: "Pending", pickSequence: 1 }
   ]);
 
   await storage.seedConnector({ name: "Shopify", status: "active", lastSync: new Date() });

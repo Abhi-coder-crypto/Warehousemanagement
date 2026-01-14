@@ -100,7 +100,11 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.userId++;
-    const user = { ...insertUser, id };
+    const user: User = { 
+      ...insertUser, 
+      id,
+      role: insertUser.role ?? "viewer"
+    };
     this.users.set(id, user);
     return user;
   }
@@ -115,7 +119,15 @@ export class MemStorage implements IStorage {
 
   async createSku(insertSku: InsertSku): Promise<Sku> {
     const id = this.skuId++;
-    const sku = { ...insertSku, id };
+    const sku: Sku = { 
+      ...insertSku, 
+      id,
+      quantity: insertSku.quantity ?? 0,
+      dimensions: insertSku.dimensions ?? null,
+      weight: insertSku.weight ?? null,
+      status: insertSku.status ?? "active",
+      location: insertSku.location ?? null
+    };
     this.skus.set(id, sku);
     return sku;
   }
@@ -142,7 +154,16 @@ export class MemStorage implements IStorage {
 
   async createOrder(insertOrder: InsertOrder, items: InsertOrderItem[]): Promise<Order> {
     const id = this.orderId++;
-    const order = { ...insertOrder, id };
+    const order: Order = { 
+      ...insertOrder, 
+      id,
+      status: insertOrder.status ?? "pending",
+      createdAt: new Date(),
+      pickedAt: null,
+      packedAt: null,
+      manifestedAt: null,
+      dispatchedAt: null
+    };
     this.orders.set(id, order);
 
     items.forEach(item => {
@@ -167,7 +188,12 @@ export class MemStorage implements IStorage {
 
   async createRack(insertRack: InsertRack): Promise<Rack> {
     const id = this.rackId++;
-    const rack = { ...insertRack, id, currentLoad: 0 };
+    const rack: Rack = { 
+      ...insertRack, 
+      id, 
+      currentLoad: 0,
+      warehouse: insertRack.warehouse ?? "Main Warehouse"
+    };
     this.racks.set(id, rack);
     return rack;
   }
@@ -187,7 +213,13 @@ export class MemStorage implements IStorage {
 
   async allocateStock(allocation: InsertStockAllocation): Promise<StockAllocation> {
     const id = this.allocationId++;
-    const newAllocation = { ...allocation, id, inboundDate: new Date() };
+    const newAllocation: StockAllocation = { 
+      ...allocation, 
+      id, 
+      inboundDate: new Date(),
+      value: allocation.value ?? 0,
+      reservedQty: allocation.reservedQty ?? 0
+    };
     this.stockAllocations.set(id, newAllocation);
     
     const rack = this.racks.get(allocation.rackId);
@@ -227,7 +259,7 @@ export class MemStorage implements IStorage {
           skuCode: sku?.code || "N/A",
           zone: rack?.locationCode || "Unknown Zone",
           rack: rack?.name || "Unknown Rack",
-          bin: "N/A", // Not fully implemented in schema but requested
+          bin: "N/A",
           uom: "PCS",
           handling: "Normal"
         };
@@ -237,12 +269,26 @@ export class MemStorage implements IStorage {
 
   async createPicklist(insertPicklist: InsertPicklist, items: InsertPicklistItem[]): Promise<Picklist> {
     const id = this.picklistId++;
-    const picklist = { ...insertPicklist, id, createdAt: new Date() };
+    const picklist: Picklist = { 
+      ...insertPicklist, 
+      id, 
+      createdAt: new Date(),
+      status: insertPicklist.status ?? "Not Started",
+      assignedPickerId: insertPicklist.assignedPickerId ?? null
+    };
     this.picklists.set(id, picklist);
 
     items.forEach(item => {
       const itemId = this.picklistItemId++;
-      this.picklistItems.set(itemId, { ...item, id: itemId, picklistId: id });
+      const picklistItem: PicklistItem = {
+        ...item,
+        id: itemId,
+        picklistId: id,
+        status: item.status ?? "Pending",
+        pickedQty: item.pickedQty ?? 0,
+        shortPickReason: item.shortPickReason ?? null
+      };
+      this.picklistItems.set(itemId, picklistItem);
     });
 
     return picklist;
