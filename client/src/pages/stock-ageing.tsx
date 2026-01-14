@@ -15,10 +15,19 @@ interface AllocationWithDetails {
   rackName: string;
 }
 
+const MOCK_ALLOCATIONS: AllocationWithDetails[] = [
+  { id: 1, skuId: 101, rackId: 1, quantity: 50, inboundDate: "2023-11-15T10:00:00Z", skuName: "Wireless Headphones", skuCode: "WH-001", rackName: "Rack A-1" },
+  { id: 2, skuId: 102, rackId: 2, quantity: 30, inboundDate: "2024-01-05T14:30:00Z", skuName: "Gaming Mouse", skuCode: "GM-002", rackName: "Rack B-2" },
+  { id: 3, skuId: 103, rackId: 3, quantity: 100, inboundDate: "2023-10-20T09:15:00Z", skuName: "Mechanical Keyboard", skuCode: "MK-003", rackName: "Rack C-3" },
+  { id: 4, skuId: 104, rackId: 4, quantity: 20, inboundDate: "2024-01-10T16:45:00Z", skuName: "USB-C Hub", skuCode: "UH-004", rackName: "Rack D-4" },
+];
+
 export default function StockAgeing() {
-  const { data: allocations } = useQuery<AllocationWithDetails[]>({ 
+  const { data: serverAllocations } = useQuery<AllocationWithDetails[]>({ 
     queryKey: ["/api/racks/allocations"] 
   });
+
+  const allocations = serverAllocations && serverAllocations.length > 0 ? serverAllocations : MOCK_ALLOCATIONS;
 
   const calculateAge = (date: string) => {
     return differenceInDays(new Date(), new Date(date));
