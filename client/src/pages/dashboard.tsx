@@ -44,11 +44,11 @@ function KPICard({ title, value, subtext, icon: Icon, trend, trendValue, delay =
         <CardContent className="p-5">
           <div className="flex justify-between items-start">
             <div className="space-y-1">
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{title}</p>
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{title}</p>
               <div className="flex items-center gap-2">
-                <h3 className="text-2xl font-black tracking-tighter">{value}</h3>
+                <h3 className="text-2xl font-bold tracking-tight">{value}</h3>
                 {trendValue && (
-                  <Badge variant="secondary" className={`text-[10px] font-bold h-5 px-1 ${trend === 'up' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-red-50 text-red-700 border-red-100'}`}>
+                  <Badge variant="secondary" className={`text-[10px] font-medium h-5 px-1 ${trend === 'up' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-red-50 text-red-700 border-red-100'}`}>
                     {trendValue}
                   </Badge>
                 )}
@@ -108,10 +108,10 @@ export default function Dashboard() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-slate-900">Operations Control</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Operations Control</h1>
           <p className="text-xs text-muted-foreground mt-0.5">Strategic warehouse oversight & performance KPIs.</p>
         </div>
-        <Button variant="outline" size="sm" className="gap-2 h-8 text-xs font-bold border-slate-200">
+        <Button variant="outline" size="sm" className="gap-2 h-8 text-xs border-slate-200">
           <Download className="w-3 h-3" /> Export Report
         </Button>
       </div>
@@ -166,12 +166,12 @@ export default function Dashboard() {
         <Card className="lg:col-span-2 border-border/50 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-4">
             <div>
-              <CardTitle className="text-sm font-black uppercase tracking-wider">Hourly Productivity</CardTitle>
+              <CardTitle className="text-sm font-semibold uppercase tracking-wider">Hourly Productivity</CardTitle>
               <CardDescription className="text-[10px]">Orders processed per time block</CardDescription>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-blue-500" />
-              <span className="text-[10px] font-bold text-muted-foreground uppercase">Orders</span>
+              <span className="text-[10px] text-muted-foreground uppercase">Orders</span>
             </div>
           </CardHeader>
           <CardContent className="h-[300px]">
@@ -182,12 +182,12 @@ export default function Dashboard() {
                   dataKey="hour" 
                   axisLine={false} 
                   tickLine={false} 
-                  tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 600 }} 
+                  tick={{ fill: '#94a3b8', fontSize: 10 }} 
                 />
                 <YAxis 
                   axisLine={false} 
                   tickLine={false} 
-                  tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 600 }} 
+                  tick={{ fill: '#94a3b8', fontSize: 10 }} 
                 />
                 <Tooltip 
                   cursor={{ fill: '#f8fafc' }} 
@@ -201,7 +201,7 @@ export default function Dashboard() {
 
         <Card className="border-border/50 shadow-sm">
           <CardHeader className="pb-4">
-            <CardTitle className="text-sm font-black uppercase tracking-wider">Order Breakdown</CardTitle>
+            <CardTitle className="text-sm font-semibold uppercase tracking-wider">Order Breakdown</CardTitle>
             <CardDescription className="text-[10px]">Current fulfillment status</CardDescription>
           </CardHeader>
           <CardContent className="h-[300px]">
@@ -226,7 +226,7 @@ export default function Dashboard() {
                   height={40} 
                   iconType="circle" 
                   iconSize={6}
-                  wrapperStyle={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', color: '#64748b' }}
+                  wrapperStyle={{ fontSize: '10px', textTransform: 'uppercase', color: '#64748b' }}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -237,7 +237,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="border-border/50 shadow-sm">
           <CardHeader className="pb-4">
-            <CardTitle className="text-sm font-black uppercase tracking-wider">Inventory Ageing</CardTitle>
+            <CardTitle className="text-sm font-semibold uppercase tracking-wider">Inventory Ageing</CardTitle>
             <CardDescription className="text-[10px]">Stock volume by time in warehouse</CardDescription>
           </CardHeader>
           <CardContent className="h-[200px]">
@@ -253,12 +253,12 @@ export default function Dashboard() {
                       }}
                     />
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <span className="text-[10px] font-black text-slate-900 bg-white/95 px-2 py-1 rounded shadow-sm border border-slate-100">
+                      <span className="text-[10px] font-semibold text-slate-900 bg-white/95 px-2 py-1 rounded shadow-sm border border-slate-100">
                         {bucket.value}
                       </span>
                     </div>
                   </div>
-                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight">{bucket.range}</span>
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-tight">{bucket.range}</span>
                 </div>
               ))}
             </div>
@@ -267,7 +267,7 @@ export default function Dashboard() {
 
         <Card className="border-border/50 shadow-sm">
           <CardHeader className="pb-4">
-            <CardTitle className="text-sm font-black uppercase tracking-wider">API Health</CardTitle>
+            <CardTitle className="text-sm font-semibold uppercase tracking-wider">API Health</CardTitle>
             <CardDescription className="text-[10px]">External integration health</CardDescription>
           </CardHeader>
           <CardContent>
@@ -277,11 +277,11 @@ export default function Dashboard() {
                   <div className="flex items-center gap-3">
                     <div className={`w-1.5 h-1.5 rounded-full ${connector.status === 'active' ? 'bg-emerald-500' : 'bg-red-500'}`} />
                     <div>
-                      <p className="text-[11px] font-black text-slate-900 uppercase tracking-tight">{connector.name}</p>
-                      <p className="text-[9px] text-muted-foreground font-bold uppercase">Sync: {connector.lastSync ? new Date(connector.lastSync).toLocaleTimeString() : 'Never'}</p>
+                      <p className="text-[11px] font-semibold text-slate-900 uppercase tracking-tight">{connector.name}</p>
+                      <p className="text-[9px] text-muted-foreground uppercase">Sync: {connector.lastSync ? new Date(connector.lastSync).toLocaleTimeString() : 'Never'}</p>
                     </div>
                   </div>
-                  <Badge variant="outline" className={`text-[9px] font-black h-5 px-1.5 uppercase ${connector.status === 'active' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-red-50 text-red-700 border-red-200'}`}>
+                  <Badge variant="outline" className={`text-[9px] font-medium h-5 px-1.5 uppercase ${connector.status === 'active' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-red-50 text-red-700 border-red-200'}`}>
                     {connector.status === 'active' ? 'Operational' : 'Failed'}
                   </Badge>
                 </div>
