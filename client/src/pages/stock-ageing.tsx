@@ -35,68 +35,68 @@ export default function StockAgeing() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Stock Ageing</h1>
-          <p className="text-sm text-muted-foreground mt-1">Inventory health and risk assessment across zones.</p>
+          <h1 className="text-2xl font-black tracking-tight text-slate-900">Stock Ageing</h1>
+          <p className="text-xs text-muted-foreground mt-0.5">Inventory health and risk assessment across zones.</p>
         </div>
-        <Button variant="outline" size="sm" className="gap-2">
-          <Download className="w-4 h-4" /> Export Report
+        <Button variant="outline" size="sm" className="gap-2 h-8 text-xs font-bold border-slate-200">
+          <Download className="w-3 h-3" /> Export Report
         </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="border-border/50">
+        <Card className="border-border/50 shadow-sm">
           <CardContent className="p-5 flex items-center justify-between">
             <div>
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Total Aged Qty</p>
-              <h3 className="text-2xl font-bold tracking-tight">{stats.totalQty}</h3>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Total Aged Qty</p>
+              <h3 className="text-2xl font-black tracking-tighter">{stats.totalQty}</h3>
             </div>
-            <div className="p-2.5 bg-blue-50 rounded-lg text-blue-600">
-              <Package className="w-5 h-5" />
+            <div className="p-2.5 bg-slate-50 rounded-lg">
+              <Package className="w-5 h-5 text-blue-600 opacity-80" />
             </div>
           </CardContent>
         </Card>
-        <Card className="border-border/50">
+        <Card className="border-border/50 shadow-sm">
           <CardContent className="p-5 flex items-center justify-between">
             <div>
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Total Aged Value</p>
-              <h3 className="text-2xl font-bold tracking-tight">₹{(stats.totalValue / 100).toLocaleString()}</h3>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Total Aged Value</p>
+              <h3 className="text-2xl font-black tracking-tighter">₹{(stats.totalValue / 100).toLocaleString()}</h3>
             </div>
-            <div className="p-2.5 bg-blue-50 rounded-lg text-blue-600">
-              <TrendingDown className="w-5 h-5" />
+            <div className="p-2.5 bg-slate-50 rounded-lg">
+              <TrendingDown className="w-5 h-5 text-blue-600 opacity-80" />
             </div>
           </CardContent>
         </Card>
-        <Card className="border-border/50">
+        <Card className="border-border/50 shadow-sm">
           <CardContent className="p-5 flex items-center justify-between">
             <div>
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Dead Stock Qty</p>
-              <h3 className="text-2xl font-bold tracking-tight text-red-600">{stats.deadStock}</h3>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Dead Stock Qty</p>
+              <h3 className="text-2xl font-black tracking-tighter text-red-600">{stats.deadStock}</h3>
             </div>
-            <div className="p-2.5 bg-red-50 rounded-lg text-red-600">
-              <AlertCircle className="w-5 h-5" />
+            <div className="p-2.5 bg-red-50 rounded-lg">
+              <AlertCircle className="w-5 h-5 text-red-600 opacity-80" />
             </div>
           </CardContent>
         </Card>
-        <Card className="border-border/50">
+        <Card className="border-border/50 shadow-sm">
           <CardContent className="p-5 flex items-center justify-between">
             <div>
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">% Over 90 Days</p>
-              <h3 className="text-2xl font-bold tracking-tight">{stats.agedPercent}%</h3>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">% Over 90 Days</p>
+              <h3 className="text-2xl font-black tracking-tighter">{stats.agedPercent}%</h3>
             </div>
-            <div className="p-2.5 bg-amber-50 rounded-lg text-amber-600">
-              <Clock className="w-5 h-5" />
+            <div className="p-2.5 bg-amber-50 rounded-lg">
+              <Clock className="w-5 h-5 text-amber-600 opacity-80" />
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <Card className="border-border/50">
-        <CardHeader className="pb-3 border-b border-border/50 bg-slate-50/30">
+      <Card className="border-border/50 shadow-sm overflow-hidden">
+        <CardHeader className="pb-3 border-b border-border/50 bg-slate-50/40">
           <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-            <CardTitle className="text-base font-bold">Inventory Records</CardTitle>
+            <CardTitle className="text-sm font-black uppercase tracking-wider">Inventory Records</CardTitle>
             <div className="flex gap-2">
               <Select value={warehouseFilter} onValueChange={setWarehouseFilter}>
-                <SelectTrigger className="w-[150px] h-8 text-xs">
+                <SelectTrigger className="w-[140px] h-8 text-[10px] font-bold uppercase border-slate-200">
                   <SelectValue placeholder="Warehouse" />
                 </SelectTrigger>
                 <SelectContent>
@@ -105,7 +105,7 @@ export default function StockAgeing() {
                 </SelectContent>
               </Select>
               <Select value={riskFilter} onValueChange={setRiskFilter}>
-                <SelectTrigger className="w-[150px] h-8 text-xs">
+                <SelectTrigger className="w-[140px] h-8 text-[10px] font-bold uppercase border-slate-200">
                   <SelectValue placeholder="Risk Level" />
                 </SelectTrigger>
                 <SelectContent>
@@ -116,7 +116,7 @@ export default function StockAgeing() {
                 </SelectContent>
               </Select>
               <Select value={bucketFilter} onValueChange={setBucketFilter}>
-                <SelectTrigger className="w-[150px] h-8 text-xs">
+                <SelectTrigger className="w-[140px] h-8 text-[10px] font-bold uppercase border-slate-200">
                   <SelectValue placeholder="Ageing Bucket" />
                 </SelectTrigger>
                 <SelectContent>
@@ -134,71 +134,71 @@ export default function StockAgeing() {
           <Table>
             <TableHeader className="bg-slate-50/50">
               <TableRow className="hover:bg-transparent border-b border-border/50">
-                <TableHead className="text-[11px] font-bold uppercase tracking-wider h-10">SKU Details</TableHead>
-                <TableHead className="text-[11px] font-bold uppercase tracking-wider h-10">Category</TableHead>
-                <TableHead className="text-[11px] font-bold uppercase tracking-wider h-10">Location</TableHead>
-                <TableHead className="text-[11px] font-bold uppercase tracking-wider h-10">Inbound Date</TableHead>
-                <TableHead className="text-[11px] font-bold uppercase tracking-wider h-10">Age (Days)</TableHead>
-                <TableHead className="text-[11px] font-bold uppercase tracking-wider h-10">Bucket</TableHead>
-                <TableHead className="text-[11px] font-bold uppercase tracking-wider h-10">Qty (Avail/Res)</TableHead>
-                <TableHead className="text-[11px] font-bold uppercase tracking-wider h-10">Value</TableHead>
-                <TableHead className="text-[11px] font-bold uppercase tracking-wider h-10">Risk</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest h-10">SKU Details</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest h-10">Category</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest h-10">Location</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest h-10">Inbound Date</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest h-10">Age (Days)</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest h-10">Bucket</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest h-10">Qty (Avail/Res)</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest h-10">Value</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest h-10">Risk</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-12 text-muted-foreground text-sm">
+                  <TableCell colSpan={9} className="text-center py-12 text-muted-foreground text-xs font-bold uppercase">
                     Loading ageing report...
                   </TableCell>
                 </TableRow>
               ) : filteredData?.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-12 text-muted-foreground text-sm">
+                  <TableCell colSpan={9} className="text-center py-12 text-muted-foreground text-xs font-bold uppercase">
                     No records found matching current filters.
                   </TableCell>
                 </TableRow>
               ) : (
                 filteredData?.map((item, idx) => (
-                  <TableRow key={idx} className="border-b border-border/40 hover:bg-slate-50/30 transition-colors">
-                    <TableCell className="py-3">
+                  <TableRow key={idx} className="border-b border-border/40 hover:bg-slate-50/40 transition-colors">
+                    <TableCell className="py-4">
                       <div className="flex flex-col">
-                        <span className="text-sm font-bold text-slate-900">{item.skuCode}</span>
-                        <span className="text-[10px] text-muted-foreground">{item.skuName}</span>
+                        <span className="text-xs font-black text-slate-900">{item.skuCode}</span>
+                        <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-tight">{item.skuName}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-sm text-slate-600">{item.category}</TableCell>
+                    <TableCell className="text-[11px] font-bold text-slate-600 uppercase tracking-tight">{item.category}</TableCell>
                     <TableCell>
-                      <div className="flex flex-col text-[10px]">
-                        <span className="font-medium text-slate-900">{item.warehouse}</span>
-                        <span className="text-muted-foreground">{item.zone} / {item.rack}</span>
+                      <div className="flex flex-col text-[9px] uppercase font-bold tracking-tight">
+                        <span className="text-slate-900">{item.warehouse}</span>
+                        <span className="text-muted-foreground font-medium">{item.zone} / {item.rack}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-[11px] text-slate-500">
+                    <TableCell className="text-[10px] font-bold text-slate-500 uppercase">
                       {item.inboundDate ? format(new Date(item.inboundDate), "MMM dd, yyyy") : "N/A"}
                     </TableCell>
-                    <TableCell className="text-sm font-medium text-slate-700">{item.age}</TableCell>
+                    <TableCell className="text-[11px] font-black text-slate-900">{item.age}</TableCell>
                     <TableCell>
-                      <Badge variant="outline" className={`text-[10px] h-5 px-1.5 font-medium ${
-                        item.age > 90 ? "bg-red-50 text-red-700 border-red-200" :
-                        item.age > 60 ? "bg-amber-50 text-amber-700 border-amber-200" :
-                        "bg-emerald-50 text-emerald-700 border-emerald-200"
+                      <Badge variant="secondary" className={`text-[9px] font-black h-5 px-1.5 border-slate-200 uppercase tracking-tighter ${
+                        item.age > 90 ? "bg-red-50 text-red-700" :
+                        item.age > 60 ? "bg-amber-50 text-amber-700" :
+                        "bg-emerald-50 text-emerald-700"
                       }`}>
                         {item.ageingBucket} Days
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-sm">
-                      <span className="font-bold text-slate-900">{item.availableQty}</span>
+                    <TableCell className="text-[11px] font-bold">
+                      <span className="font-black text-slate-900">{item.availableQty}</span>
                       <span className="text-muted-foreground mx-1">/</span>
                       <span className="text-slate-500">{item.reservedQty}</span>
                     </TableCell>
-                    <TableCell className="text-sm font-bold text-slate-900">
+                    <TableCell className="text-[11px] font-black text-slate-900">
                       ₹{(item.inventoryValue / 100).toLocaleString()}
                     </TableCell>
                     <TableCell>
                       <Badge 
                         variant="default"
-                        className={`text-[10px] h-5 px-1.5 font-bold ${
+                        className={`text-[9px] font-black h-5 px-1.5 uppercase tracking-tighter shadow-none ${
                           item.riskLevel === "High" ? "bg-red-500 hover:bg-red-600" :
                           item.riskLevel === "Medium" ? "bg-amber-500 hover:bg-amber-600" :
                           "bg-emerald-500 hover:bg-emerald-600"
