@@ -177,10 +177,10 @@ async function seedData() {
   
   await storage.createOrder({ orderId: "ORD-001", customer: "John Doe", type: "Manual", status: "pending", totalQuantity: 2 }, [{ skuId: sku1.id, quantity: 1, orderId: 0 }]);
   
-  const rack1 = await storage.createRack({ name: "Rack A", locationCode: "Zone 1", capacity: 1000, warehouse: "Main" });
-  await storage.allocateStock({ skuId: sku1.id, rackId: rack1.id, quantity: 100, reservedQty: 0, value: 10000 });
+  const rack1 = await storage.createRack({ name: "Rack A", locationCode: "Zone 1", capacity: 1000 });
+  await storage.allocateStock({ skuId: sku1.id, rackId: rack1.id, quantity: 100 });
 
-  await storage.createPicklist({ orderIds: [1], priority: "High", warehouse: "Main", status: "Not Started" }, [
+  await storage.createPicklist({ orderIds: [1], priority: "High", warehouse: "Main Warehouse", status: "Not Started" }, [
     { skuId: sku1.id, rackId: rack1.id, picklistId: 0, requiredQty: 5, pickedQty: 0, status: "Pending", pickSequence: 1 }
   ]);
 

@@ -36,7 +36,6 @@ export const racks = pgTable("racks", {
   locationCode: text("location_code").notNull(), // e.g., "Zone 1"
   capacity: integer("capacity").notNull(),
   currentLoad: integer("current_load").notNull().default(0),
-  warehouse: text("warehouse").notNull().default("Main Warehouse"),
 });
 
 // Stock Allocation (Mapping SKUs to Racks)
@@ -45,9 +44,7 @@ export const stockAllocations = pgTable("stock_allocations", {
   skuId: integer("sku_id").notNull(),
   rackId: integer("rack_id").notNull(),
   quantity: integer("quantity").notNull(),
-  reservedQty: integer("reserved_qty").notNull().default(0),
   inboundDate: timestamp("inbound_date").defaultNow(),
-  value: integer("value").notNull().default(0), // Inventory value in cents
 });
 
 // Picklists

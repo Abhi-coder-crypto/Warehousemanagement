@@ -192,7 +192,6 @@ export class MemStorage implements IStorage {
       ...insertRack, 
       id, 
       currentLoad: 0,
-      warehouse: insertRack.warehouse ?? "Main Warehouse"
     };
     this.racks.set(id, rack);
     return rack;
@@ -217,8 +216,6 @@ export class MemStorage implements IStorage {
       ...allocation, 
       id, 
       inboundDate: new Date(),
-      value: allocation.value ?? 0,
-      reservedQty: allocation.reservedQty ?? 0
     };
     this.stockAllocations.set(id, newAllocation);
     
@@ -353,7 +350,7 @@ export class MemStorage implements IStorage {
         skuCode: sku?.code || "N/A",
         skuName: sku?.name || "Unknown SKU",
         category: sku?.category || "N/A",
-        warehouse: rack?.warehouse || "Main",
+        warehouse: "Main Warehouse",
         zone: rack?.locationCode || "N/A",
         rack: rack?.name || "N/A",
         bin: "N/A",
@@ -361,8 +358,8 @@ export class MemStorage implements IStorage {
         age: ageDays,
         ageingBucket: bucket,
         availableQty: alloc.quantity,
-        reservedQty: alloc.reservedQty,
-        inventoryValue: alloc.value,
+        reservedQty: 0,
+        inventoryValue: 0,
         riskLevel: risk
       };
     });
